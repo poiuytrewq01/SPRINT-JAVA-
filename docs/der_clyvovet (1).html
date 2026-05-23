@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+  body { background: white; font-family: Arial, sans-serif; margin: 20px; }
+  h2 { text-align: center; color: #333; margin-bottom: 20px; }
+  .der { display: flex; flex-wrap: wrap; gap: 16px; justify-content: center; }
+  .table { border: 2px solid #555; border-radius: 8px; overflow: hidden; min-width: 200px; }
+  .table-header { background: #2c5f8a; color: white; font-weight: bold; text-align: center; padding: 8px 12px; font-size: 14px; }
+  .table-row { display: grid; grid-template-columns: 90px 1fr 40px; font-size: 12px; border-top: 1px solid #ddd; }
+  .table-row:nth-child(even) { background: #f0f4f8; }
+  .table-row:nth-child(odd) { background: #fff; }
+  .table-row span { padding: 4px 8px; }
+  .pk { color: #c0392b; font-weight: bold; }
+  .fk { color: #2980b9; font-weight: bold; }
+  .uk { color: #8e44ad; font-weight: bold; }
+  .rel { margin-top: 30px; }
+  .rel h3 { color: #333; border-bottom: 2px solid #2c5f8a; padding-bottom: 6px; }
+  .rel-item { font-size: 13px; padding: 4px 0; color: #444; }
+  .rel-item span { font-weight: bold; color: #2c5f8a; }
+</style>
+</head>
+<body>
+<h2>DER — Diagrama de Entidade e Relacionamento | Clyvo-Vet</h2>
+<div class="der">
+
+  <div class="table">
+    <div class="table-header">TUTORS</div>
+    <div class="table-row"><span class="pk">Long</span><span>id</span><span class="pk">PK</span></div>
+    <div class="table-row"><span>String</span><span>name</span><span></span></div>
+    <div class="table-row"><span>String</span><span>email</span><span class="uk">UK</span></div>
+    <div class="table-row"><span>String</span><span>cpf</span><span class="uk">UK</span></div>
+    <div class="table-row"><span>String</span><span>phone</span><span></span></div>
+    <div class="table-row"><span>DateTime</span><span>createdAt</span><span></span></div>
+  </div>
+
+  <div class="table">
+    <div class="table-header">VETERINARIANS</div>
+    <div class="table-row"><span class="pk">Long</span><span>id</span><span class="pk">PK</span></div>
+    <div class="table-row"><span>String</span><span>name</span><span></span></div>
+    <div class="table-row"><span>String</span><span>crmv</span><span class="uk">UK</span></div>
+    <div class="table-row"><span>String</span><span>email</span><span></span></div>
+    <div class="table-row"><span>String</span><span>phone</span><span></span></div>
+    <div class="table-row"><span>String</span><span>specialty</span><span></span></div>
+  </div>
+
+  <div class="table">
+    <div class="table-header">PETS</div>
+    <div class="table-row"><span class="pk">Long</span><span>id</span><span class="pk">PK</span></div>
+    <div class="table-row"><span>String</span><span>name</span><span></span></div>
+    <div class="table-row"><span>String</span><span>species</span><span></span></div>
+    <div class="table-row"><span>String</span><span>breed</span><span></span></div>
+    <div class="table-row"><span>LocalDate</span><span>birthDate</span><span></span></div>
+    <div class="table-row"><span>Decimal</span><span>weight</span><span></span></div>
+    <div class="table-row"><span>String</span><span>gender</span><span></span></div>
+    <div class="table-row"><span class="fk">Long</span><span>tutor_id</span><span class="fk">FK</span></div>
+    <div class="table-row"><span class="fk">Long</span><span>veterinarian_id</span><span class="fk">FK</span></div>
+  </div>
+
+  <div class="table">
+    <div class="table-header">PET_STREAKS</div>
+    <div class="table-row"><span class="pk">Long</span><span>id</span><span class="pk">PK</span></div>
+    <div class="table-row"><span class="fk">Long</span><span>pet_id</span><span class="fk">FK</span></div>
+    <div class="table-row"><span>int</span><span>currentStreak</span><span></span></div>
+    <div class="table-row"><span>int</span><span>longestStreak</span><span></span></div>
+    <div class="table-row"><span>LocalDate</span><span>lastCheckIn</span><span></span></div>
+    <div class="table-row"><span>String</span><span>level</span><span></span></div>
+  </div>
+
+  <div class="table">
+    <div class="table-header">VACCINES</div>
+    <div class="table-row"><span class="pk">Long</span><span>id</span><span class="pk">PK</span></div>
+    <div class="table-row"><span>String</span><span>name</span><span></span></div>
+    <div class="table-row"><span>String</span><span>manufacturer</span><span></span></div>
+    <div class="table-row"><span>LocalDate</span><span>applicationDate</span><span></span></div>
+    <div class="table-row"><span>LocalDate</span><span>nextDoseDate</span><span></span></div>
+    <div class="table-row"><span class="fk">Long</span><span>pet_id</span><span class="fk">FK</span></div>
+    <div class="table-row"><span class="fk">Long</span><span>veterinarian_id</span><span class="fk">FK</span></div>
+  </div>
+
+  <div class="table">
+    <div class="table-header">CLINICAL_RECORDS</div>
+    <div class="table-row"><span class="pk">Long</span><span>id</span><span class="pk">PK</span></div>
+    <div class="table-row"><span>LocalDate</span><span>date</span><span></span></div>
+    <div class="table-row"><span>String</span><span>description</span><span></span></div>
+    <div class="table-row"><span>String</span><span>diagnosis</span><span></span></div>
+    <div class="table-row"><span>String</span><span>treatment</span><span></span></div>
+    <div class="table-row"><span class="fk">Long</span><span>pet_id</span><span class="fk">FK</span></div>
+    <div class="table-row"><span class="fk">Long</span><span>veterinarian_id</span><span class="fk">FK</span></div>
+  </div>
+
+  <div class="table">
+    <div class="table-header">REMINDERS</div>
+    <div class="table-row"><span class="pk">Long</span><span>id</span><span class="pk">PK</span></div>
+    <div class="table-row"><span>String</span><span>type</span><span></span></div>
+    <div class="table-row"><span>LocalDate</span><span>dueDate</span><span></span></div>
+    <div class="table-row"><span>String</span><span>message</span><span></span></div>
+    <div class="table-row"><span>String</span><span>status</span><span></span></div>
+    <div class="table-row"><span class="fk">Long</span><span>pet_id</span><span class="fk">FK</span></div>
+  </div>
+
+  <div class="table">
+    <div class="table-header">ACTIVITY_CHECK_INS</div>
+    <div class="table-row"><span class="pk">Long</span><span>id</span><span class="pk">PK</span></div>
+    <div class="table-row"><span>LocalDate</span><span>date</span><span></span></div>
+    <div class="table-row"><span>String</span><span>activityType</span><span></span></div>
+    <div class="table-row"><span>Integer</span><span>durationMinutes</span><span></span></div>
+    <div class="table-row"><span class="fk">Long</span><span>pet_id</span><span class="fk">FK</span></div>
+  </div>
+
+</div>
+
+<div class="rel">
+  <h3>Relacionamentos</h3>
+  <div class="rel-item">• <span>TUTORS</span> 1 ──── N <span>PETS</span> &nbsp;&nbsp; (um tutor possui muitos pets)</div>
+  <div class="rel-item">• <span>VETERINARIANS</span> 1 ──── N <span>PETS</span> &nbsp;&nbsp; (um vet acompanha muitos pets)</div>
+  <div class="rel-item">• <span>PETS</span> 1 ──── 1 <span>PET_STREAKS</span> &nbsp;&nbsp; (cada pet tem um streak único)</div>
+  <div class="rel-item">• <span>PETS</span> 1 ──── N <span>VACCINES</span> &nbsp;&nbsp; (um pet recebe muitas vacinas)</div>
+  <div class="rel-item">• <span>PETS</span> 1 ──── N <span>CLINICAL_RECORDS</span> &nbsp;&nbsp; (um pet tem muitos prontuários)</div>
+  <div class="rel-item">• <span>PETS</span> 1 ──── N <span>REMINDERS</span> &nbsp;&nbsp; (um pet recebe muitos lembretes)</div>
+  <div class="rel-item">• <span>PETS</span> 1 ──── N <span>ACTIVITY_CHECK_INS</span> &nbsp;&nbsp; (um pet registra muitos check-ins)</div>
+  <div class="rel-item">• <span>VETERINARIANS</span> 1 ──── N <span>VACCINES</span> &nbsp;&nbsp; (um vet aplica muitas vacinas)</div>
+  <div class="rel-item">• <span>VETERINARIANS</span> 1 ──── N <span>CLINICAL_RECORDS</span> &nbsp;&nbsp; (um vet registra muitos prontuários)</div>
+</div>
+</body>
+</html>
