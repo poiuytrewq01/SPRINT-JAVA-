@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Select-Object -First 60)",
+      "PowerShell(java *)",
+      "PowerShell($env:JAVA_HOME = \"C:\\\\Users\\\\leona\\\\.jdks\\\\ms-21.0.11\"; $env:PATH = \"$env:JAVA_HOME\\\\bin;$env:PATH\"; cd \"C:\\\\Users\\\\leona\\\\OneDrive\\\\Documentos\\\\challenge\"; .\\\\mvnw.cmd compile 2>&1 | Select-Object -Last 60)",
+      "PowerShell($env:JAVA_HOME = \"C:\\\\Users\\\\leona\\\\.jdks\\\\ms-21.0.11\"; $env:PATH = \"$env:JAVA_HOME\\\\bin;$env:PATH\"; cd \"C:\\\\Users\\\\leona\\\\OneDrive\\\\Documentos\\\\challenge\"; .\\\\mvnw.cmd test 2>&1 | Select-Object -Last 30)",
+      "PowerShell($env:JAVA_HOME = \"C:\\\\Users\\\\leona\\\\.jdks\\\\ms-21.0.11\"; $env:PATH = \"$env:JAVA_HOME\\\\bin;$env:PATH\"; cd \"C:\\\\Users\\\\leona\\\\OneDrive\\\\Documentos\\\\challenge\"; .\\\\mvnw.cmd spring-boot:run 2>&1 | Select-Object -Last 20)",
+      "PowerShell($env:JAVA_HOME = \"C:\\\\Users\\\\leona\\\\.jdks\\\\ms-21.0.11\"; $env:PATH = \"$env:JAVA_HOME\\\\bin;$env:PATH\"; cd \"C:\\\\Users\\\\leona\\\\OneDrive\\\\Documentos\\\\challenge\"; .\\\\mvnw.cmd spring-boot:run)",
+      "PowerShell(Stop-Process *)",
+      "PowerShell(Invoke-RestMethod \"http://localhost:8080/api/pets/1/health\")",
+      "PowerShell(Invoke-RestMethod \"http://localhost:8080/api/pets/4/health\")",
+      "PowerShell($env:JAVA_HOME = \"C:\\\\Users\\\\leona\\\\.jdks\\\\ms-21.0.11\"; $env:PATH = \"$env:JAVA_HOME\\\\bin;$env:PATH\"; cd \"C:\\\\Users\\\\leona\\\\OneDrive\\\\Documentos\\\\challenge\"; .\\\\mvnw.cmd compile -q 2>&1 | Select-Object -Last 5)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(dir \"C:\\\\Users\\\\leona\\\\OneDrive\\\\Documentos\\\\challenge\\\\docs\")",
+      "Bash(dir \"C:\\\\Users\\\\leona\\\\OneDrive\\\\Documentos\\\\challenge\\\\README.md\")"
+    ]
+  }
+}
