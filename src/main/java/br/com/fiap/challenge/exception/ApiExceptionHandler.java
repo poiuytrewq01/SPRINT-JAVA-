@@ -3,6 +3,7 @@ package br.com.fiap.challenge.exception;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -24,8 +25,19 @@ import java.util.List;
  * 3. MethodArgumentNotValidException → 400 com detalhes por campo (Bean Validation)
  * 4. Exception                 → 500 Internal Server Error (fallback genérico)
  */
-@RestControllerAdvice
-public class GlobalExceptionHandler {
+/**
+ * Tratamento de erros da API REST: toda resposta sai em JSON.
+ *
+ * O escopo esta limitado ao pacote dos @RestController de proposito. Um
+ * advice sem escopo tambem capturaria as excecoes lancadas pelas telas web e
+ * devolveria JSON ao navegador -- e, pior, o handler genérico de Exception
+ * interceptaria AccessDeniedException antes do Spring Security, impedindo o
+ * redirecionamento para a pagina de acesso negado.
+ *
+ * As telas web sao atendidas pelo WebExceptionHandler.
+ */
+@RestControllerAdvice(basePackages = "br.com.fiap.challenge.controller")
+public class ApiExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleNotFound(ResourceNotFoundException ex, HttpServletRequest request) {
@@ -54,6 +66,18 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(
                 LocalDateTime.now(), 400, "Validation Error", "Erro de validação nos campos enviados",
                 request.getRequestURI(), fieldErrors
+        ));
+    }
+
+    /**
+     * Autenticado, porem sem permissao para a operacao. Tratado explicitamente
+     * para nao cair no handler genérico e virar um 500.
+     */
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleAccessDenied(AccessDeniedException ex, HttpServletRequest request) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponse(
+                LocalDateTime.now(), 403, "Forbidden", "Voce nao tem permissao para esta operacao.",
+                request.getRequestURI(), null
         ));
     }
 
