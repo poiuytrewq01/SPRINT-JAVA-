@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: pagina('Veterinarios', ~{:: main})}" lang="pt-BR">
+<body>
+<main>
+
+    <div class="cabecalho-pagina">
+        <div>
+            <h1>Veterinarios</h1>
+            <p class="subtitulo">
+                O vinculo so passa a valer depois que o profissional aceita a solicitacao.
+            </p>
+        </div>
+    </div>
+
+    <!-- ============ FLUXO 2 (tutor): abrir solicitacao de vinculo ========= -->
+    <section class="cartao" style="max-width:640px">
+        <h2>Solicitar vinculo</h2>
+
+        <div class="vazio" th:if="${#lists.isEmpty(pets)}">
+            Cadastre um pet antes de solicitar vinculo.
+        </div>
+
+        <form th:unless="${#lists.isEmpty(pets)}"
+              th:action="@{/tutor/vinculos}" th:object="${vetLinkForm}" method="post" novalidate>
+
+            <div class="linha-campos">
+                <div class="campo" th:classappend="${#fields.hasErrors('petId')} ? ' campo-em-erro'">
+                    <label for="petId">Pet</label>
+                    <select id="petId" th:field="*{petId}">
+                        <option value="">Selecione</option>
+                        <option th:each="pet : ${pets}" th:value="${pet.id}"
+                                th:text="${pet.name} + ' (' + ${pet.species.label} + ')'">Pet</option>
+                    </select>
+                    <span class="erro-campo" th:if="${#fields.hasErrors('petId')}" th:errors="*{petId}"></span>
+                </div>
+
+                <div class="campo" th:classappend="${#fields.hasErrors('veterinarianId')} ? ' campo-em-erro'">
+                    <label for="veterinarianId">Veterinario</label>
+                    <select id="veterinarianId" th:field="*{veterinarianId}">
+                        <option value="">Selecione</option>
+                        <option th:each="vet : ${veterinarios}" th:value="${vet.id}"
+                                th:text="${vet.name} + (${vet.specialty} != null ? ' — ' + ${vet.specialty} : '')">
+                            Vet
+                        </option>
+                    </select>
+                    <span class="erro-campo" th:if="${#fields.hasErrors('veterinarianId')}"
+                          th:errors="*{veterinarianId}"></span>
+                </div>
+            </div>
+
+            <div class="campo" th:classappend="${#fields.hasErrors('message')} ? ' campo-em-erro'">
+                <label for="message">Mensagem (opcional)</label>
+                <textarea id="message" th:field="*{message}" maxlength="300"
+                          placeholder="Gostaria de acompanhar meu pet na sua clinica."></textarea>
+                <span class="erro-campo" th:if="${#fields.hasErrors('message')}" th:errors="*{message}"></span>
+            </div>
+
+            <button type="submit" class="botao">Enviar solicitacao</button>
+        </form>
+    </section>
+
+    <!-- ==================== acompanhamento das solicitacoes ============== -->
+    <section class="cartao">
+        <h2>Minhas solicitacoes</h2>
+
+        <div class="vazio" th:if="${#lists.isEmpty(solicitacoes)}">
+            Nenhuma solicitacao enviada ainda.
+        </div>
+
+        <div class="tabela-rolavel" th:unless="${#lists.isEmpty(solicitacoes)}">
+            <table>
+                <thead>
+                <tr>
+                    <th>Pet</th><th>Veterinario</th><th>Enviada em</th>
+                    <th>Situacao</th><th>Resposta</th><th></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="pedido : ${solicitacoes}">
+                    <td th:text="${pedido.pet.name}">Pet</td>
+                    <td th:text="${pedido.veterinarian.name}">Vet</td>
+                    <td th:text="${#temporals.format(pedido.createdAt, 'dd/MM/yyyy')}">data</td>
+                    <td>
+                        <!--
+                          A classe da etiqueta acompanha o estado: pendente em
+                          neutro, aprovada em verde, recusada e cancelada em
+                          vermelho e cinza.
+                        -->
+                        <span class="etiqueta"
+                              th:classappend="${pedido.status.name() == 'APPROVED'} ? ' sucesso'
+                                            : (${pedido.status.name() == 'REJECTED'} ? ' erro'
+                                            : (${pedido.status.name() == 'CANCELLED'} ? ' neutra' : ' alerta'))"
+                              th:text="${pedido.status.label}">Situacao</span>
+                    </td>
+                    <td class="dica" th:text="${pedido.responseNote} ?: '—'">nota</td>
+                    <td>
+                        <!-- Cancelar so aparece enquanto a solicitacao esta pendente. -->
+                        <form th:if="${pedido.pending}"
+                              th:action="@{/tutor/vinculos/{id}/cancelar(id=${pedido.id})}" method="post">
+                            <button type="submit" class="botao secundario compacto">Cancelar</button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+</main>
+</body>
+</html>

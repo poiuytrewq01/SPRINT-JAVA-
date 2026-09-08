@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: pagina(${pet.name}, ~{:: main})}" lang="pt-BR">
+<body>
+<main>
+
+    <div class="cabecalho-pagina">
+        <div>
+            <h1 th:text="${pet.name}">Nome</h1>
+            <p class="subtitulo">
+                <span th:text="${pet.species.label}">Especie</span>
+                <span th:if="${pet.breed}" th:text="' · ' + ${pet.breed}"></span>
+                <span th:if="${pet.veterinarian != null}"
+                      th:text="' · sob cuidados de ' + ${pet.veterinarian.name}"></span>
+            </p>
+        </div>
+        <a class="botao secundario" th:href="@{/tutor}">Voltar</a>
+    </div>
+
+    <!-- ============================== FLUXO 1: check-in diario ============ -->
+    <section class="cartao">
+        <h2>Check-in de hoje</h2>
+        <p class="subtitulo">
+            Um registro por dia mantem a sequencia viva. Perder um dia zera a contagem.
+        </p>
+
+        <div class="grade grade-3" style="margin:1.1rem 0">
+            <div class="indicador">
+                <div class="valor" th:text="${resumo.currentStreak}">0</div>
+                <div class="rotulo">Dias seguidos</div>
+            </div>
+            <div class="indicador">
+                <div class="valor" th:text="${resumo.longestStreak}">0</div>
+                <div class="rotulo">Recorde</div>
+            </div>
+            <div class="indicador">
+                <div class="valor" style="font-size:1.15rem" th:text="${resumo.levelLabel}">Nivel</div>
+                <div class="rotulo">Nivel atual</div>
+            </div>
+        </div>
+
+        <!-- Ja houve check-in hoje: o formulario da lugar a confirmacao. -->
+        <div class="aviso sucesso" th:if="${checkInHoje}">
+            Atividade de hoje ja registrada. Volte amanha para manter a sequencia.
+        </div>
+
+        <form th:unless="${checkInHoje}"
+              th:action="@{/tutor/pets/{id}/check-in(id=${pet.id})}"
+              th:object="${checkInForm}" method="post" novalidate>
+
+            <div class="linha-campos">
+                <div class="campo" th:classappend="${#fields.hasErrors('activityType')} ? ' campo-em-erro'">
+                    <label for="activityType">Atividade</label>
+                    <select id="activityType" th:field="*{activityType}">
+                        <option value="">Selecione</option>
+                        <option th:each="t : ${tiposAtividade}" th:value="${t}" th:text="${t}">Tipo</option>
+                    </select>
+                    <span class="erro-campo" th:if="${#fields.hasErrors('activityType')}"
+                          th:errors="*{activityType}"></span>
+                </div>
+
+                <div class="campo" th:classappend="${#fields.hasErrors('durationMinutes')} ? ' campo-em-erro'">
+                    <label for="durationMinutes">Duracao (min)</label>
+                    <input type="number" id="durationMinutes" th:field="*{durationMinutes}" min="1" max="1440">
+                    <span class="erro-campo" th:if="${#fields.hasErrors('durationMinutes')}"
+                          th:errors="*{durationMinutes}"></span>
+                </div>
+            </div>
+
+            <div class="campo" th:classappend="${#fields.hasErrors('notes')} ? ' campo-em-erro'">
+                <label for="notes">Observacao</label>
+                <textarea id="notes" th:field="*{notes}" maxlength="500"
+                          placeholder="Passeio no parque, 3 km."></textarea>
+                <span class="erro-campo" th:if="${#fields.hasErrors('notes')}" th:errors="*{notes}"></span>
+            </div>
+
+            <button type="submit" class="botao">Registrar check-in</button>
+        </form>
+    </section>
+
+    <div class="grade grade-2">
+
+        <!-- ========================== indicadores de saude ================ -->
+        <section class="cartao">
+            <h2>Saude</h2>
+
+            <label th:text="'Score ' + ${resumo.healthScore} + '/100'">Score</label>
+            <div class="barra"
+                 th:classappend="${resumo.healthScore} &lt; 50 ? ' critico' : (${resumo.healthScore} &lt; 75 ? ' atencao' : '')">
+                <span th:style="'width:' + ${resumo.healthScore} + '%'"></span>
+            </div>
+            <p class="dica" th:text="${resumo.healthMessage}">Mensagem</p>
+
+            <label th:text="'Perfil ' + ${resumo.profileCompletion} + '% completo'">Perfil</label>
+            <div class="barra"><span th:style="'width:' + ${resumo.profileCompletion} + '%'"></span></div>
+            <p class="dica" th:text="${resumo.profileMessage}">Mensagem</p>
+        </section>
+
+        <!-- ==================== FLUXO 3 (tutor): lembretes ================ -->
+        <section class="cartao">
+            <h2>Proximos 30 dias</h2>
+
+            <div class="vazio" th:if="${#lists.isEmpty(lembretes)}">Nenhum lembrete no periodo.</div>
+
+            <div class="tabela-rolavel" th:unless="${#lists.isEmpty(lembretes)}">
+                <table>
+                    <thead>
+                    <tr><th>Quando</th><th>Lembrete</th><th></th></tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="lembrete : ${lembretes}">
+                        <td>
+                            <span th:text="${#temporals.format(lembrete.dueDate, 'dd/MM')}">00/00</span><br>
+                            <span class="etiqueta"
+                                  th:classappend="${lembrete.daysUntilDue} &lt;= 7 ? ' alerta' : ''"
+                                  th:text="'em ' + ${lembrete.daysUntilDue} + ' dias'">prazo</span>
+                        </td>
+                        <td th:text="${lembrete.message}">Mensagem</td>
+                        <td>
+                            <form th:action="@{/tutor/pets/{p}/lembretes/{l}/concluir(p=${pet.id},l=${lembrete.id})}"
+                                  method="post">
+                                <button type="submit" class="botao secundario compacto">Concluir</button>
+                            </form>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+    <!-- ================================ vacinas ========================== -->
+    <section class="cartao">
+        <h2>Vacinas</h2>
+
+        <div class="vazio" th:if="${#lists.isEmpty(vacinas)}">Nenhuma vacina registrada.</div>
+
+        <div class="tabela-rolavel" th:unless="${#lists.isEmpty(vacinas)}">
+            <table>
+                <thead>
+                <tr><th>Vacina</th><th>Aplicacao</th><th>Proxima dose</th><th>Situacao</th></tr>
+                </thead>
+                <tbody>
+                <tr th:each="vacina : ${vacinas}">
+                    <td>
+                        <strong th:text="${vacina.name}">Nome</strong>
+                        <span class="dica" th:if="${vacina.manufacturer}"
+                              th:text="' · ' + ${vacina.manufacturer}"></span>
+                    </td>
+                    <td th:text="${#temporals.format(vacina.applicationDate, 'dd/MM/yyyy')}">data</td>
+                    <td th:text="${vacina.nextDoseDate != null}
+                                 ? ${#temporals.format(vacina.nextDoseDate, 'dd/MM/yyyy')} : '—'">data</td>
+                    <td>
+                        <span class="etiqueta erro" th:if="${vacina.overdue}">Vencida</span>
+                        <span class="etiqueta sucesso" th:unless="${vacina.overdue}">Em dia</span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- ============================== prontuarios ======================== -->
+    <section class="cartao">
+        <h2>Historico clinico</h2>
+
+        <div class="vazio" th:if="${#lists.isEmpty(prontuarios)}">
+            Nenhum atendimento registrado. Apenas o veterinario vinculado pode incluir registros.
+        </div>
+
+        <div class="tabela-rolavel" th:unless="${#lists.isEmpty(prontuarios)}">
+            <table>
+                <thead>
+                <tr><th>Data</th><th>Atendimento</th><th>Diagnostico</th><th>Veterinario</th></tr>
+                </thead>
+                <tbody>
+                <tr th:each="registro : ${prontuarios}">
+                    <td th:text="${#temporals.format(registro.date, 'dd/MM/yyyy')}">data</td>
+                    <td th:text="${registro.description}">descricao</td>
+                    <td th:text="${registro.diagnosis} ?: '—'">diagnostico</td>
+                    <td th:text="${registro.veterinarianName} ?: '—'">vet</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+</main>
+</body>
+</html>

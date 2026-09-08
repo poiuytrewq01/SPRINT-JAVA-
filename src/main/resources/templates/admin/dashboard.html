@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: pagina('Painel', ~{:: main})}" lang="pt-BR">
+<body>
+<main>
+
+    <div class="cabecalho-pagina">
+        <div>
+            <h1>Painel da plataforma</h1>
+            <p class="subtitulo">
+                Visao consolidada e contas de acesso. O perfil administrativo nao escreve
+                no historico clinico dos pets.
+            </p>
+        </div>
+        <a class="botao secundario" th:href="@{/swagger-ui.html}">Documentacao da API</a>
+    </div>
+
+    <div class="grade grade-3">
+        <div class="cartao indicador">
+            <div class="valor" th:text="${resumo.usuarios}">0</div>
+            <div class="rotulo">Usuarios</div>
+        </div>
+        <div class="cartao indicador">
+            <div class="valor" th:text="${resumo.tutores}">0</div>
+            <div class="rotulo">Tutores</div>
+        </div>
+        <div class="cartao indicador">
+            <div class="valor" th:text="${resumo.veterinarios}">0</div>
+            <div class="rotulo">Veterinarios</div>
+        </div>
+        <div class="cartao indicador">
+            <div class="valor" th:text="${resumo.pets}">0</div>
+            <div class="rotulo">Pets</div>
+        </div>
+        <div class="cartao indicador">
+            <div class="valor" th:text="${resumo.vacinas}">0</div>
+            <div class="rotulo">Vacinas</div>
+        </div>
+        <div class="cartao indicador">
+            <div class="valor" th:text="${resumo.prontuarios}">0</div>
+            <div class="rotulo">Prontuarios</div>
+        </div>
+    </div>
+
+    <section class="cartao">
+        <h2>Contas de acesso</h2>
+        <p class="subtitulo">
+            A senha nunca aparece aqui: o banco guarda apenas o hash BCrypt, que nao pode
+            ser revertido para o texto original.
+        </p>
+
+        <div class="tabela-rolavel">
+            <table>
+                <thead>
+                <tr><th>Nome</th><th>E-mail</th><th>Perfil</th><th>Vinculo</th><th>Situacao</th></tr>
+                </thead>
+                <tbody>
+                <tr th:each="usuario : ${usuarios}">
+                    <td th:text="${usuario.name}">Nome</td>
+                    <td class="dica" th:text="${usuario.email}">email</td>
+                    <td><span class="etiqueta" th:text="${usuario.role.label}">Perfil</span></td>
+                    <td class="dica">
+                        <span th:if="${usuario.tutor != null}"
+                              th:text="'Tutor #' + ${usuario.tutor.id}"></span>
+                        <span th:if="${usuario.veterinarian != null}"
+                              th:text="'CRMV ' + ${usuario.veterinarian.crmv}"></span>
+                        <span th:if="${usuario.tutor == null and usuario.veterinarian == null}">—</span>
+                    </td>
+                    <td>
+                        <span class="etiqueta sucesso" th:if="${usuario.enabled}">Ativa</span>
+                        <span class="etiqueta neutra" th:unless="${usuario.enabled}">Inativa</span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+</main>
+</body>
+</html>

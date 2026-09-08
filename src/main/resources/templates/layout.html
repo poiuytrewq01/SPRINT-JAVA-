@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<!--
+  Layout unico da aplicacao.
+
+  O fragmento "pagina" recebe dois parametros: o titulo e o bloco de conteudo
+  da tela. Cada pagina informa apenas o que tem de proprio; cabecalho, menu,
+  avisos e rodape ficam definidos aqui, em um lugar so. Sem isso, uma mudanca
+  no menu exigiria editar todas as telas.
+
+  Uso nas paginas:
+      <html th:replace="~{layout :: pagina('Titulo', ~{:: main})}">
+-->
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:fragment="pagina(titulo, conteudo)"
+      lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="'PetHealth | ' + ${titulo}">PetHealth</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+
+<header class="topo">
+    <div class="topo-interno">
+        <a class="marca" th:href="@{/}">PetHealth</a>
+
+        <!--
+          sec:authorize renderiza o bloco apenas para quem tem o perfil. E
+          conforto visual, nao seguranca: quem esconde a rota de verdade e o
+          SecurityConfig. Um link oculto ainda pode ser digitado na barra de
+          enderecos, e nesse caso o filtro e que barra.
+        -->
+        <nav class="menu">
+            <th:block sec:authorize="hasRole('TUTOR')">
+                <a th:href="@{/tutor}">Meus pets</a>
+                <a th:href="@{/tutor/vinculos}">Veterinarios</a>
+                <a th:href="@{/tutor/pets/novo}">Cadastrar pet</a>
+            </th:block>
+
+            <th:block sec:authorize="hasRole('VETERINARIAN')">
+                <a th:href="@{/vet}">Pacientes</a>
+                <a th:href="@{/vet/solicitacoes}">Solicitacoes</a>
+            </th:block>
+
+            <th:block sec:authorize="hasRole('ADMIN')">
+                <a th:href="@{/admin}">Painel</a>
+                <a th:href="@{/swagger-ui.html}">API</a>
+            </th:block>
+        </nav>
+
+        <div class="identidade" sec:authorize="isAuthenticated()">
+            <span th:text="${#authentication.principal.name}">Usuario</span>
+            <span class="etiqueta neutra" th:text="${#authentication.principal.role.label}">Perfil</span>
+
+            <!--
+              Logout por POST, e nao por link. Um GET que encerra a sessao pode
+              ser disparado por qualquer imagem ou link externo apontando para
+              /logout; o POST exige o token CSRF, que so a propria pagina tem.
+            -->
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="botao secundario compacto">Sair</button>
+            </form>
+        </div>
+    </div>
+</header>
+
+<main class="conteudo">
+    <!-- Avisos vindos de flash attributes apos um redirect. -->
+    <div class="aviso sucesso" th:if="${sucesso}" th:text="${sucesso}" role="status"></div>
+    <div class="aviso erro" th:if="${erro}" th:text="${erro}" role="alert"></div>
+
+    <!-- Conteudo especifico da pagina. -->
+    <th:block th:replace="${conteudo}"></th:block>
+</main>
+
+<footer class="rodape">
+    <span>PetHealth &middot; Challenge FIAP &middot; Java Advanced</span>
+</footer>
+
+</body>
+</html>

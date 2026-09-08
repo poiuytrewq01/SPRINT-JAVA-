@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: pagina('Acesso negado', ~{:: main})}" lang="pt-BR">
+<body>
+<main>
+    <div class="cartao" style="text-align:center">
+        <h1>Acesso negado</h1>
+        <p class="subtitulo">
+            Voce esta autenticado, mas o seu perfil nao tem permissao para acessar esta area.
+        </p>
+        <div class="acoes" style="justify-content:center; margin-top:1rem">
+            <a class="botao" th:href="@{/}">Voltar para a minha area</a>
+        </div>
+    </div>
+</main>
+</body>
+</html>

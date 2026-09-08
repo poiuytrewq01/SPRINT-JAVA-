@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: pagina('Cadastrar pet', ~{:: main})}" lang="pt-BR">
+<body>
+<main>
+
+    <div class="cabecalho-pagina">
+        <div>
+            <h1>Cadastrar pet</h1>
+            <p class="subtitulo">O vinculo com um veterinario e feito depois, na aba Veterinarios.</p>
+        </div>
+        <a class="botao secundario" th:href="@{/tutor}">Voltar</a>
+    </div>
+
+    <div class="cartao" style="max-width:640px">
+        <!--
+          th:object define o objeto do formulario; a partir dele, th:field="*{campo}"
+          preenche de uma vez o id, o name e o value do input. Quando a validacao
+          falha, o controller devolve esta mesma pagina e cada campo reaparece com
+          o que o usuario havia digitado.
+        -->
+        <form th:action="@{/tutor/pets}" th:object="${petForm}" method="post" novalidate>
+
+            <div class="aviso erro" th:if="${#fields.hasAnyErrors()}" role="alert">
+                Verifique os campos destacados abaixo.
+            </div>
+
+            <div class="campo" th:classappend="${#fields.hasErrors('name')} ? ' campo-em-erro'">
+                <label for="name">Nome</label>
+                <input type="text" id="name" th:field="*{name}" maxlength="50" placeholder="Rex">
+                <span class="erro-campo" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span>
+            </div>
+
+            <div class="linha-campos">
+                <div class="campo" th:classappend="${#fields.hasErrors('species')} ? ' campo-em-erro'">
+                    <label for="species">Especie</label>
+                    <select id="species" th:field="*{species}">
+                        <option value="">Selecione</option>
+                        <!-- th:value grava o nome do enum; th:text mostra o rotulo em portugues. -->
+                        <option th:each="e : ${especies}" th:value="${e}" th:text="${e.label}">Especie</option>
+                    </select>
+                    <span class="erro-campo" th:if="${#fields.hasErrors('species')}" th:errors="*{species}"></span>
+                </div>
+
+                <div class="campo" th:classappend="${#fields.hasErrors('breed')} ? ' campo-em-erro'">
+                    <label for="breed">Raca</label>
+                    <input type="text" id="breed" th:field="*{breed}" maxlength="80" placeholder="Labrador">
+                    <span class="erro-campo" th:if="${#fields.hasErrors('breed')}" th:errors="*{breed}"></span>
+                </div>
+            </div>
+
+            <div class="linha-campos">
+                <div class="campo" th:classappend="${#fields.hasErrors('birthDate')} ? ' campo-em-erro'">
+                    <label for="birthDate">Nascimento</label>
+                    <input type="date" id="birthDate" th:field="*{birthDate}">
+                    <span class="erro-campo" th:if="${#fields.hasErrors('birthDate')}" th:errors="*{birthDate}"></span>
+                </div>
+
+                <div class="campo" th:classappend="${#fields.hasErrors('weight')} ? ' campo-em-erro'">
+                    <label for="weight">Peso (kg)</label>
+                    <input type="number" id="weight" th:field="*{weight}" step="0.01" min="0.1" max="300">
+                    <span class="erro-campo" th:if="${#fields.hasErrors('weight')}" th:errors="*{weight}"></span>
+                </div>
+
+                <div class="campo">
+                    <label for="gender">Sexo</label>
+                    <select id="gender" th:field="*{gender}">
+                        <option value="">Nao informado</option>
+                        <option th:each="g : ${generos}" th:value="${g}"
+                                th:text="${g.name() == 'MALE'} ? 'Macho' : 'Femea'">Sexo</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="campo campo-inline">
+                <input type="checkbox" id="profilePublic" th:field="*{profilePublic}">
+                <label for="profilePublic">Perfil publico (outros tutores podem ver)</label>
+            </div>
+
+            <div class="acoes">
+                <button type="submit" class="botao">Cadastrar</button>
+                <a class="botao secundario" th:href="@{/tutor}">Cancelar</a>
+            </div>
+        </form>
+    </div>
+
+</main>
+</body>
+</html>

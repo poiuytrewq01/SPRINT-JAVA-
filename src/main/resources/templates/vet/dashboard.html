@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: pagina('Pacientes', ~{:: main})}" lang="pt-BR">
+<body>
+<main>
+
+    <div class="cabecalho-pagina">
+        <div>
+            <h1>Meus pacientes</h1>
+            <p class="subtitulo">Pets cujo vinculo voce aprovou.</p>
+        </div>
+        <a class="botao" th:href="@{/vet/solicitacoes}">
+            Solicitacoes
+            <span th:if="${solicitacoesPendentes > 0}" th:text="'(' + ${solicitacoesPendentes} + ')'"></span>
+        </a>
+    </div>
+
+    <div class="aviso info" th:if="${solicitacoesPendentes > 0}">
+        Voce tem <strong th:text="${solicitacoesPendentes}">0</strong> solicitacao(oes) de vinculo aguardando resposta.
+        <a th:href="@{/vet/solicitacoes}">Analisar agora</a>.
+    </div>
+
+    <div class="vazio cartao" th:if="${#lists.isEmpty(pacientes)}">
+        Nenhum paciente vinculado ainda. Os vinculos comecam com uma solicitacao do tutor.
+    </div>
+
+    <section class="cartao" th:unless="${#lists.isEmpty(pacientes)}">
+        <div class="tabela-rolavel">
+            <table>
+                <thead>
+                <tr><th>Paciente</th><th>Especie / raca</th><th>Tutor</th><th>Contato</th><th></th></tr>
+                </thead>
+                <tbody>
+                <tr th:each="pet : ${pacientes}">
+                    <td><strong th:text="${pet.name}">Nome</strong></td>
+                    <td>
+                        <span th:text="${pet.species.label}">Especie</span>
+                        <span class="dica" th:if="${pet.breed}" th:text="' · ' + ${pet.breed}"></span>
+                    </td>
+                    <td th:text="${pet.tutor.name}">Tutor</td>
+                    <td class="dica" th:text="${pet.tutor.email}">email</td>
+                    <td>
+                        <a class="botao compacto" th:href="@{/vet/pacientes/{id}(id=${pet.id})}">Atender</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+</main>
+</body>
+</html>

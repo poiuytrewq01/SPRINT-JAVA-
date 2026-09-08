@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: pagina(${pet.name}, ~{:: main})}" lang="pt-BR">
+<body>
+<main>
+
+    <div class="cabecalho-pagina">
+        <div>
+            <h1 th:text="${pet.name}">Nome</h1>
+            <p class="subtitulo">
+                <span th:text="${pet.species.label}">Especie</span>
+                <span th:if="${pet.breed}" th:text="' · ' + ${pet.breed}"></span>
+                &middot; tutor: <span th:text="${pet.tutor.name}">Tutor</span>
+                &middot; nascimento:
+                <span th:text="${#temporals.format(pet.birthDate, 'dd/MM/yyyy')}">data</span>
+            </p>
+        </div>
+        <a class="botao secundario" th:href="@{/vet}">Voltar</a>
+    </div>
+
+    <div class="grade grade-3">
+        <div class="cartao indicador">
+            <div class="valor" th:text="${resumo.healthScore}">0</div>
+            <div class="rotulo">Score de saude</div>
+        </div>
+        <div class="cartao indicador">
+            <div class="valor" th:text="${resumo.overdueVaccines}">0</div>
+            <div class="rotulo">Vacinas vencidas</div>
+        </div>
+        <div class="cartao indicador">
+            <div class="valor" th:text="${resumo.currentStreak}">0</div>
+            <div class="rotulo">Sequencia do tutor</div>
+        </div>
+    </div>
+
+    <!-- ================= FLUXO 3: registrar atendimento ================== -->
+    <section class="cartao">
+        <h2>Registrar atendimento</h2>
+        <p class="subtitulo">
+            Ao salvar, um lembrete de retorno em 6 meses e criado automaticamente para o tutor.
+        </p>
+
+        <form th:action="@{/vet/pacientes/{id}/atendimentos(id=${pet.id})}"
+              th:object="${atendimentoForm}" method="post" novalidate>
+
+            <div class="aviso erro" th:if="${#fields.hasAnyErrors()}" role="alert">
+                Verifique os campos destacados abaixo.
+            </div>
+
+            <div class="linha-campos">
+                <div class="campo" th:classappend="${#fields.hasErrors('date')} ? ' campo-em-erro'">
+                    <label for="date">Data</label>
+                    <input type="date" id="date" th:field="*{date}">
+                    <span class="erro-campo" th:if="${#fields.hasErrors('date')}" th:errors="*{date}"></span>
+                </div>
+
+                <div class="campo" th:classappend="${#fields.hasErrors('weight')} ? ' campo-em-erro'">
+                    <label for="weight">Peso na consulta (kg)</label>
+                    <input type="number" id="weight" th:field="*{weight}" step="0.01" min="0.1" max="300">
+                    <span class="erro-campo" th:if="${#fields.hasErrors('weight')}" th:errors="*{weight}"></span>
+                </div>
+            </div>
+
+            <div class="campo" th:classappend="${#fields.hasErrors('description')} ? ' campo-em-erro'">
+                <label for="description">Atendimento</label>
+                <input type="text" id="description" th:field="*{description}" maxlength="200"
+                       placeholder="Consulta de rotina">
+                <span class="erro-campo" th:if="${#fields.hasErrors('description')}"
+                      th:errors="*{description}"></span>
+            </div>
+
+            <div class="linha-campos">
+                <div class="campo" th:classappend="${#fields.hasErrors('diagnosis')} ? ' campo-em-erro'">
+                    <label for="diagnosis">Diagnostico</label>
+                    <input type="text" id="diagnosis" th:field="*{diagnosis}" maxlength="300">
+                    <span class="erro-campo" th:if="${#fields.hasErrors('diagnosis')}"
+                          th:errors="*{diagnosis}"></span>
+                </div>
+
+                <div class="campo" th:classappend="${#fields.hasErrors('treatment')} ? ' campo-em-erro'">
+                    <label for="treatment">Tratamento</label>
+                    <input type="text" id="treatment" th:field="*{treatment}" maxlength="500">
+                    <span class="erro-campo" th:if="${#fields.hasErrors('treatment')}"
+                          th:errors="*{treatment}"></span>
+                </div>
+            </div>
+
+            <div class="campo" th:classappend="${#fields.hasErrors('observations')} ? ' campo-em-erro'">
+                <label for="observations">Observacoes</label>
+                <textarea id="observations" th:field="*{observations}" maxlength="1000"></textarea>
+                <span class="erro-campo" th:if="${#fields.hasErrors('observations')}"
+                      th:errors="*{observations}"></span>
+            </div>
+
+            <button type="submit" class="botao">Salvar atendimento</button>
+        </form>
+    </section>
+
+    <!-- ============================== prontuarios ======================== -->
+    <section class="cartao">
+        <h2>Historico clinico</h2>
+
+        <div class="vazio" th:if="${#lists.isEmpty(prontuarios)}">Nenhum atendimento registrado.</div>
+
+        <div class="tabela-rolavel" th:unless="${#lists.isEmpty(prontuarios)}">
+            <table>
+                <thead>
+                <tr><th>Data</th><th>Atendimento</th><th>Diagnostico</th><th>Tratamento</th><th>Peso</th></tr>
+                </thead>
+                <tbody>
+                <tr th:each="registro : ${prontuarios}">
+                    <td th:text="${#temporals.format(registro.date, 'dd/MM/yyyy')}">data</td>
+                    <td th:text="${registro.description}">descricao</td>
+                    <td th:text="${registro.diagnosis} ?: '—'">diagnostico</td>
+                    <td th:text="${registro.treatment} ?: '—'">tratamento</td>
+                    <td th:text="${registro.weight != null} ? ${registro.weight} + ' kg' : '—'">peso</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- ================================ vacinas ========================== -->
+    <section class="cartao">
+        <h2>Carteira de vacinacao</h2>
+
+        <div class="vazio" th:if="${#lists.isEmpty(vacinas)}">Nenhuma vacina registrada.</div>
+
+        <div class="tabela-rolavel" th:unless="${#lists.isEmpty(vacinas)}">
+            <table>
+                <thead>
+                <tr><th>Vacina</th><th>Aplicacao</th><th>Proxima dose</th><th>Situacao</th></tr>
+                </thead>
+                <tbody>
+                <tr th:each="vacina : ${vacinas}">
+                    <td th:text="${vacina.name}">Nome</td>
+                    <td th:text="${#temporals.format(vacina.applicationDate, 'dd/MM/yyyy')}">data</td>
+                    <td th:text="${vacina.nextDoseDate != null}
+                                 ? ${#temporals.format(vacina.nextDoseDate, 'dd/MM/yyyy')} : '—'">data</td>
+                    <td>
+                        <span class="etiqueta erro" th:if="${vacina.overdue}">Vencida</span>
+                        <span class="etiqueta sucesso" th:unless="${vacina.overdue}">Em dia</span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+</main>
+</body>
+</html>

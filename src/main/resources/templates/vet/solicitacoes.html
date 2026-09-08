@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: pagina('Solicitacoes', ~{:: main})}" lang="pt-BR">
+<body>
+<main>
+
+    <div class="cabecalho-pagina">
+        <div>
+            <h1>Solicitacoes de vinculo</h1>
+            <p class="subtitulo">
+                Aprovar cria o vinculo e libera o prontuario do pet para voce.
+            </p>
+        </div>
+        <a class="botao secundario" th:href="@{/vet}">Voltar</a>
+    </div>
+
+    <!-- =============== FLUXO 2 (vet): decidir as pendentes =============== -->
+    <section class="cartao">
+        <h2>Aguardando sua resposta</h2>
+
+        <div class="vazio" th:if="${#lists.isEmpty(pendentes)}">
+            Nenhuma solicitacao pendente.
+        </div>
+
+        <article th:each="pedido : ${pendentes}" class="cartao"
+                 style="background:var(--cor-fundo); margin-bottom:1rem">
+
+            <div class="cabecalho-pagina" style="margin-bottom:.5rem">
+                <div>
+                    <h3 th:text="${pedido.pet.name} + ' · ' + ${pedido.pet.species.label}">Pet</h3>
+                    <p class="dica" style="margin:0">
+                        Tutor: <span th:text="${pedido.pet.tutor.name}">Tutor</span>
+                        &middot; <span th:text="${pedido.pet.tutor.email}">email</span>
+                        &middot; solicitado em
+                        <span th:text="${#temporals.format(pedido.createdAt, 'dd/MM/yyyy HH:mm')}">data</span>
+                    </p>
+                </div>
+                <span class="etiqueta alerta" th:text="${pedido.status.label}">Pendente</span>
+            </div>
+
+            <p th:if="${pedido.message}" th:text="'“' + ${pedido.message} + '”'"
+               style="font-style:italic; color:var(--cor-texto-suave)">mensagem</p>
+
+            <!--
+              Aprovar e recusar sao POSTs distintos, cada um com o seu form.
+              Um unico form com dois botoes exigiria descobrir no controller
+              qual deles foi clicado -- o endereco ja diz a intencao.
+            -->
+            <div class="acoes">
+                <form th:action="@{/vet/solicitacoes/{id}/aprovar(id=${pedido.id})}" method="post"
+                      class="acoes">
+                    <input type="text" name="observacao" maxlength="300"
+                           placeholder="Observacao (opcional)" style="min-width:230px">
+                    <button type="submit" class="botao">Aprovar</button>
+                </form>
+
+                <form th:action="@{/vet/solicitacoes/{id}/recusar(id=${pedido.id})}" method="post">
+                    <button type="submit" class="botao secundario">Recusar</button>
+                </form>
+            </div>
+        </article>
+    </section>
+
+    <!-- ============================== historico ========================== -->
+    <section class="cartao">
+        <h2>Historico</h2>
+
+        <div class="vazio" th:if="${historico.isEmpty()}">Nenhuma solicitacao registrada.</div>
+
+        <div class="tabela-rolavel" th:unless="${historico.isEmpty()}">
+            <table>
+                <thead>
+                <tr><th>Pet</th><th>Tutor</th><th>Solicitada</th><th>Respondida</th>
+                    <th>Situacao</th><th>Observacao</th></tr>
+                </thead>
+                <tbody>
+                <tr th:each="pedido : ${historico.content}">
+                    <td th:text="${pedido.pet.name}">Pet</td>
+                    <td th:text="${pedido.pet.tutor.name}">Tutor</td>
+                    <td th:text="${#temporals.format(pedido.createdAt, 'dd/MM/yyyy')}">data</td>
+                    <td th:text="${pedido.respondedAt != null}
+                                 ? ${#temporals.format(pedido.respondedAt, 'dd/MM/yyyy')} : '—'">data</td>
+                    <td>
+                        <span class="etiqueta"
+                              th:classappend="${pedido.status.name() == 'APPROVED'} ? ' sucesso'
+                                            : (${pedido.status.name() == 'REJECTED'} ? ' erro'
+                                            : (${pedido.status.name() == 'CANCELLED'} ? ' neutra' : ' alerta'))"
+                              th:text="${pedido.status.label}">Situacao</span>
+                    </td>
+                    <td class="dica" th:text="${pedido.responseNote} ?: '—'">nota</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Paginacao: os links so aparecem quando ha mais de uma pagina. -->
+        <div class="paginacao" th:if="${historico.totalPages > 1}">
+            <a class="botao secundario compacto"
+               th:if="${!historico.first}"
+               th:href="@{/vet/solicitacoes(pagina=${historico.number - 1})}">Anterior</a>
+
+            <span class="dica"
+                  th:text="'Pagina ' + (${historico.number} + 1) + ' de ' + ${historico.totalPages}">1 de 1</span>
+
+            <a class="botao secundario compacto"
+               th:if="${!historico.last}"
+               th:href="@{/vet/solicitacoes(pagina=${historico.number + 1})}">Proxima</a>
+        </div>
+    </section>
+
+</main>
+</body>
+</html>

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: pagina('Meus pets', ~{:: main})}" lang="pt-BR">
+<body>
+<main>
+
+    <div class="cabecalho-pagina">
+        <div>
+            <h1>Meus pets</h1>
+            <p class="subtitulo">Acompanhe a saude e a rotina de cuidados de cada um.</p>
+        </div>
+        <a class="botao" th:href="@{/tutor/pets/novo}">Cadastrar pet</a>
+    </div>
+
+    <div class="vazio cartao" th:if="${#lists.isEmpty(pets)}">
+        Voce ainda nao cadastrou nenhum pet.
+        <div class="acoes" style="justify-content:center; margin-top:1rem">
+            <a class="botao" th:href="@{/tutor/pets/novo}">Cadastrar o primeiro</a>
+        </div>
+    </div>
+
+    <div class="grade grade-2">
+        <!--
+          th:each percorre a lista de pets. O resumo de saude de cada um sai do
+          mapa montado no controller, indexado pelo id: assim a view apenas le
+          um valor ja calculado, sem disparar consulta dentro do laco.
+        -->
+        <article class="cartao" th:each="pet : ${pets}" th:with="resumo=${resumos[pet.id]}">
+
+            <div class="cabecalho-pagina" style="margin-bottom:.75rem">
+                <div>
+                    <h2 th:text="${pet.name}">Nome</h2>
+                    <p class="subtitulo" style="font-size:.85rem"
+                       th:text="${pet.species.label} + (${pet.breed} != null ? ' · ' + ${pet.breed} : '')">
+                        Especie
+                    </p>
+                </div>
+                <span class="etiqueta" th:text="${resumo.levelLabel}">Nivel</span>
+            </div>
+
+            <label th:text="'Saude ' + ${resumo.healthScore} + '/100'">Saude</label>
+            <div class="barra"
+                 th:classappend="${resumo.healthScore} &lt; 50 ? ' critico' : (${resumo.healthScore} &lt; 75 ? ' atencao' : '')">
+                <span th:style="'width:' + ${resumo.healthScore} + '%'"></span>
+            </div>
+            <p class="dica" th:text="${resumo.healthMessage}">Mensagem</p>
+
+            <label th:text="'Perfil ' + ${resumo.profileCompletion} + '% completo'">Perfil</label>
+            <div class="barra">
+                <span th:style="'width:' + ${resumo.profileCompletion} + '%'"></span>
+            </div>
+
+            <div class="grade grade-3" style="margin:1rem 0">
+                <div class="indicador">
+                    <div class="valor" th:text="${resumo.currentStreak}">0</div>
+                    <div class="rotulo">Sequencia</div>
+                </div>
+                <div class="indicador">
+                    <div class="valor" th:text="${resumo.overdueVaccines}">0</div>
+                    <div class="rotulo">Vac. vencidas</div>
+                </div>
+                <div class="indicador">
+                    <div class="valor" th:text="${resumo.pendingReminders}">0</div>
+                    <div class="rotulo">Lembretes</div>
+                </div>
+            </div>
+
+            <div class="aviso erro" th:if="${resumo.needsAttention()}" style="margin-bottom:1rem">
+                <span th:if="${resumo.overdueVaccines > 0}">Ha vacinas vencidas. </span>
+                <span th:unless="${resumo.hasRecentCheckup}">Sem consulta nos ultimos 12 meses.</span>
+            </div>
+
+            <div class="acoes">
+                <a class="botao" th:href="@{/tutor/pets/{id}(id=${pet.id})}">Abrir</a>
+                <span class="dica" th:if="${pet.veterinarian != null}"
+                      th:text="'Vet: ' + ${pet.veterinarian.name}">Vet</span>
+                <a class="dica" th:if="${pet.veterinarian == null}" th:href="@{/tutor/vinculos}">
+                    Sem veterinario &mdash; solicitar vinculo
+                </a>
+            </div>
+        </article>
+    </div>
+
+</main>
+</body>
+</html>
