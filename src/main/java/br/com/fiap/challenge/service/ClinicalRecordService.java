@@ -3,11 +3,9 @@ package br.com.fiap.challenge.service;
 import br.com.fiap.challenge.dto.request.ClinicalRecordRequest;
 import br.com.fiap.challenge.dto.response.ClinicalRecordResponse;
 import br.com.fiap.challenge.entity.ClinicalRecord;
-import br.com.fiap.challenge.entity.Reminder;
 import br.com.fiap.challenge.enums.ReminderType;
 import br.com.fiap.challenge.exception.ResourceNotFoundException;
 import br.com.fiap.challenge.repository.ClinicalRecordRepository;
-import br.com.fiap.challenge.repository.ReminderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,8 +26,11 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ClinicalRecordService {
 
+    /** Intervalo padrão de retorno recomendado após uma consulta. */
+    private static final int FOLLOW_UP_MONTHS = 6;
+
     private final ClinicalRecordRepository clinicalRecordRepository;
-    private final ReminderRepository reminderRepository;
+    private final ReminderService reminderService;
     private final PetService petService;
     private final VeterinarianService veterinarianService;
     private final PetHealthService petHealthService;
@@ -72,14 +73,15 @@ public class ClinicalRecordService {
 
         record = clinicalRecordRepository.save(record);
 
-        // Lembrete automático de retorno: padrão semestral de acompanhamento preventivo
-        Reminder followUp = Reminder.builder()
-                .type(ReminderType.RETURN)
-                .dueDate(request.date().plusMonths(6))
-                .message("Retorno de " + record.getPet().getName() + ": " + request.description())
-                .pet(record.getPet())
-                .build();
-        reminderRepository.save(followUp);
+        // Lembrete automático de retorno: padrão semestral de acompanhamento
+        // preventivo. Um prontuário antigo, cadastrado para completar o
+        // histórico, produz uma data de retorno já vencida — nesse caso o
+        // ReminderService não agenda nada.
+        reminderService.scheduleAutomatic(
+                record.getPet(),
+                ReminderType.RETURN,
+                request.date().plusMonths(FOLLOW_UP_MONTHS),
+                "Retorno de " + record.getPet().getName() + ": " + request.description());
 
         // Prontuário recente impacta o health score (critério de checkup nos últimos 12 meses)
         petHealthService.evictCache(request.petId());

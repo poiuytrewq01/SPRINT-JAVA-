@@ -82,6 +82,18 @@ public class ActivityCheckInService {
         return ActivityCheckInResponse.from(checkIn);
     }
 
+    /**
+     * Informa se o pet ja registrou atividade hoje.
+     *
+     * A tela usa isso para desabilitar o formulario antes do envio, em vez de
+     * deixar o tutor preencher e so entao receber o erro. A validacao no
+     * checkIn continua existindo: esconder o botao nao impede um POST direto.
+     */
+    @Transactional(readOnly = true)
+    public boolean hasCheckedInToday(Long petId) {
+        return checkInRepository.existsByPetIdAndDate(petId, LocalDate.now());
+    }
+
     @Transactional(readOnly = true)
     public PetStreakResponse getStreak(Long petId) {
         petService.getPetOrThrow(petId);

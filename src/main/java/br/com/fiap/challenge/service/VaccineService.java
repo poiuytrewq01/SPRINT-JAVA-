@@ -2,11 +2,9 @@ package br.com.fiap.challenge.service;
 
 import br.com.fiap.challenge.dto.request.VaccineRequest;
 import br.com.fiap.challenge.dto.response.VaccineResponse;
-import br.com.fiap.challenge.entity.Reminder;
 import br.com.fiap.challenge.entity.Vaccine;
 import br.com.fiap.challenge.enums.ReminderType;
 import br.com.fiap.challenge.exception.ResourceNotFoundException;
-import br.com.fiap.challenge.repository.ReminderRepository;
 import br.com.fiap.challenge.repository.VaccineRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -29,7 +27,7 @@ import java.util.List;
 public class VaccineService {
 
     private final VaccineRepository vaccineRepository;
-    private final ReminderRepository reminderRepository;
+    private final ReminderService reminderService;
     private final PetService petService;
     private final VeterinarianService veterinarianService;
     private final PetHealthService petHealthService;
@@ -82,16 +80,14 @@ public class VaccineService {
 
         vaccine = vaccineRepository.save(vaccine);
 
-        // Criação automática de lembrete ao informar a data da próxima dose
-        if (request.nextDoseDate() != null) {
-            Reminder reminder = Reminder.builder()
-                    .type(ReminderType.VACCINE)
-                    .dueDate(request.nextDoseDate())
-                    .message("Próxima dose de " + request.name() + " para " + vaccine.getPet().getName())
-                    .pet(vaccine.getPet())
-                    .build();
-            reminderRepository.save(reminder);
-        }
+        // Criação automática de lembrete ao informar a data da próxima dose.
+        // O ReminderService descarta datas já vencidas — registrar uma vacina
+        // antiga não deve gerar um alerta para uma data no passado.
+        reminderService.scheduleAutomatic(
+                vaccine.getPet(),
+                ReminderType.VACCINE,
+                request.nextDoseDate(),
+                "Próxima dose de " + request.name() + " para " + vaccine.getPet().getName());
 
         // Invalida o cache pois o total/status de vacinas impacta o health score
         petHealthService.evictCache(request.petId());

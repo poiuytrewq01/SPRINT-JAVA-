@@ -2,6 +2,7 @@ package br.com.fiap.challenge.service;
 
 import br.com.fiap.challenge.dto.request.ReminderRequest;
 import br.com.fiap.challenge.dto.response.ReminderResponse;
+import br.com.fiap.challenge.entity.Pet;
 import br.com.fiap.challenge.entity.Reminder;
 import br.com.fiap.challenge.enums.ReminderStatus;
 import br.com.fiap.challenge.enums.ReminderType;
@@ -11,11 +12,13 @@ import br.com.fiap.challenge.repository.ReminderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Gerencia os lembretes inteligentes de saúde do pet.
@@ -57,6 +60,38 @@ public class ReminderService {
                 .stream().map(ReminderResponse::from).toList();
     }
 
+    /**
+     * Agenda um lembrete disparado por outra operacao do sistema -- a proxima
+     * dose de uma vacina, o retorno apos uma consulta.
+     *
+     * A data e verificada antes de gravar. Reminder.dueDate e anotado com
+     * @Future, entao uma data passada faria o Hibernate lancar
+     * ConstraintViolationException e derrubar a transacao inteira: ao
+     * registrar hoje uma consulta de dois anos atras, o retorno calculado
+     * (consulta + 6 meses) cairia no passado e o cadastro do prontuario
+     * falharia por causa do lembrete. Como um lembrete so faz sentido para
+     * alertar sobre algo que ainda vai acontecer, a data vencida simplesmente
+     * nao gera lembrete.
+     *
+     * Concentrar a regra aqui evita repeti-la em cada service que agenda
+     * lembretes automaticos.
+     *
+     * @return o lembrete criado, ou vazio quando a data ja passou
+     */
+    @Transactional
+    public Optional<Reminder> scheduleAutomatic(Pet pet, ReminderType type, LocalDate dueDate, String message) {
+        if (dueDate == null || !dueDate.isAfter(LocalDate.now())) {
+            return Optional.empty();
+        }
+
+        return Optional.of(reminderRepository.save(Reminder.builder()
+                .type(type)
+                .dueDate(dueDate)
+                .message(message)
+                .pet(pet)
+                .build()));
+    }
+
     @Transactional
     public ReminderResponse create(ReminderRequest request) {
         Reminder reminder = Reminder.builder()
@@ -83,6 +118,24 @@ public class ReminderService {
 
         reminder.setStatus(status);
         return ReminderResponse.from(reminderRepository.save(reminder));
+    }
+
+    /**
+     * Conclui um lembrete garantindo que ele pertence ao pet informado.
+     *
+     * Sem essa conferencia, o controller so validaria que o pet e do tutor --
+     * o id do lembrete continuaria livre na URL, e trocar esse numero
+     * permitiria concluir o lembrete do pet de outra pessoa. Verificar apenas
+     * um dos dois identificadores nao protege o par.
+     */
+    @Transactional
+    public ReminderResponse markDoneForPet(Long reminderId, Long petId) {
+        Reminder reminder = getReminderOrThrow(reminderId);
+
+        if (!reminder.getPet().getId().equals(petId)) {
+            throw new AccessDeniedException("Lembrete nao pertence a este pet.");
+        }
+        return updateStatus(reminderId, ReminderStatus.DONE);
     }
 
     @Transactional

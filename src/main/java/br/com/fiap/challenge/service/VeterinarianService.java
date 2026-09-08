@@ -11,8 +11,11 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -70,6 +73,16 @@ public class VeterinarianService {
     public void delete(Long id) {
         getVetOrThrow(id);
         veterinarianRepository.deleteById(id);
+    }
+
+    /**
+     * Lista usada para popular o select de veterinarios na tela do tutor.
+     * Devolve entidades porque a view precisa apenas de id, nome e
+     * especialidade -- montar um DTO so para isso nao acrescentaria nada.
+     */
+    @Transactional(readOnly = true)
+    public List<Veterinarian> findAllEntities() {
+        return veterinarianRepository.findAll(Sort.by("name"));
     }
 
     public Veterinarian getVetOrThrow(Long id) {
