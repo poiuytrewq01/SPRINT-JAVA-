@@ -1,0 +1,49 @@
+spring:
+  application:
+    name: challenge-pet
+
+  datasource:
+    # As variaveis de ambiente permitem trocar o destino do banco sem recompilar.
+    # Os valores apos ":" sao os defaults de desenvolvimento (docker-compose local).
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/pethealth}
+    username: ${DB_USERNAME:pethealth}
+    password: ${DB_PASSWORD:pethealth}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      # validate: o Hibernate apenas confere se as entidades batem com o schema
+      # criado pelo Flyway. Nunca cria nem altera tabelas.
+      ddl-auto: validate
+    open-in-view: false
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+
+  thymeleaf:
+    cache: false
+
+  cache:
+    type: simple
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method
+    tagsSorter: alpha
+    try-it-out-enabled: true
+
+server:
+  port: ${PORT:8080}
+
+logging:
+  level:
+    org.flywaydb: INFO

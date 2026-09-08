@@ -1,0 +1,32 @@
+# PostgreSQL para desenvolvimento local.
+#
+# Sobe o banco na porta padrao 5432, com usuario, senha e database iguais aos
+# valores default do application.yaml -- assim a aplicacao roda sem nenhuma
+# variavel de ambiente configurada.
+#
+#   docker compose up -d      inicia
+#   docker compose down       para (mantem os dados)
+#   docker compose down -v    para e apaga o volume, forcando o Flyway a
+#                             recriar o banco do zero na proxima execucao
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: pethealth-db
+    environment:
+      POSTGRES_DB: pethealth
+      POSTGRES_USER: pethealth
+      POSTGRES_PASSWORD: pethealth
+    ports:
+      - "5432:5432"
+    volumes:
+      - pethealth-data:/var/lib/postgresql/data
+    healthcheck:
+      # A aplicacao so deve conectar depois que o banco aceitar conexoes.
+      test: ["CMD-SHELL", "pg_isready -U pethealth -d pethealth"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  pethealth-data:

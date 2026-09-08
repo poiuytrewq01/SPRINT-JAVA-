@@ -1,0 +1,15 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:pethealth_test;MODE=PostgreSQL;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    # Nos testes o schema e gerado pelo Hibernate: e um banco descartavel,
+    # recriado a cada execucao. O Flyway fica desligado para nao exigir
+    # que as migrations sejam compativeis com o dialeto do H2.
+    hibernate:
+      ddl-auto: create-drop
+    database-platform: org.hibernate.dialect.H2Dialect
+  flyway:
+    enabled: false
