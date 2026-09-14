@@ -9,6 +9,19 @@ banco com Flyway e controle de acesso com Spring Security.
 
 ---
 
+## Links da entrega
+
+| | |
+|---|---|
+| **Aplicação no ar** | [https://sprint-java.onrender.com](https://sprint-java.onrender.com/) |
+| **Vídeo de demonstração** | [COLE_O_LINK_DO_YOUTUBE_AQUI](https://youtu.be/MdLhfoWKWB4) |
+| **Repositório** | https://github.com/poiuytrewq01/SPRINT-JAVA- |
+
+> A aplicação está hospedada no plano gratuito do Render. O contêiner hiberna
+> após alguns minutos sem acesso, então **o primeiro carregamento pode levar
+> cerca de 3 minutos** enquanto o serviço reinicia. Os acessos seguintes são
+> imediatos.
+
 ## Sumário
 
 - [Como executar](#como-executar)
