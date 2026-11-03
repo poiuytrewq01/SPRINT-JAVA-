@@ -26,6 +26,25 @@ spring:
     locations: classpath:db/migration
     baseline-on-migrate: true
 
+  rabbitmq:
+    # URI completa do broker. Local: o RabbitMQ do docker-compose. No Render:
+    # a URL do CloudAMQP (amqps://usuario:senha@host/vhost) -- o prefixo amqps
+    # liga o TLS automaticamente.
+    addresses: ${RABBITMQ_URL:amqp://guest:guest@localhost:5672}
+    # Sem broker, desiste da conexao rapido em vez de prender a thread por 60s.
+    connection-timeout: 5s
+    listener:
+      simple:
+        # Uma mensagem que falhou em todas as tentativas e rejeitada sem voltar
+        # para a fila -- e o que a encaminha para a DLQ.
+        default-requeue-rejected: false
+        retry:
+          enabled: true
+          max-attempts: 3
+          initial-interval: 1s
+          multiplier: 2
+          max-interval: 10s
+
   thymeleaf:
     cache: false
 
@@ -47,3 +66,4 @@ server:
 logging:
   level:
     org.flywaydb: INFO
+    br.com.fiap.challenge.messaging: INFO
