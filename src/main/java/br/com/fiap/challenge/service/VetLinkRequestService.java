@@ -7,6 +7,7 @@ import br.com.fiap.challenge.entity.Veterinarian;
 import br.com.fiap.challenge.enums.LinkRequestStatus;
 import br.com.fiap.challenge.exception.BusinessException;
 import br.com.fiap.challenge.exception.ResourceNotFoundException;
+import br.com.fiap.challenge.messaging.NotificationPublisher;
 import br.com.fiap.challenge.repository.UserRepository;
 import br.com.fiap.challenge.repository.VetLinkRequestRepository;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +40,7 @@ public class VetLinkRequestService {
     private final PetAccessGuard petAccessGuard;
     private final VeterinarianService veterinarianService;
     private final PetHealthService petHealthService;
+    private final NotificationPublisher notificationPublisher;
 
     // ---------------------------------------------------------------- leitura
 
@@ -81,22 +83,26 @@ public class VetLinkRequestService {
 
         if (isAlreadyLinked(pet, veterinarianId)) {
             throw new BusinessException(
-                    pet.getName() + " ja esta vinculado a " + veterinarian.getName() + ".");
+                    pet.getName() + " já está vinculado a " + veterinarian.getName() + ".");
         }
 
         if (linkRepository.existsByPetIdAndVeterinarianIdAndStatus(petId, veterinarianId, LinkRequestStatus.PENDING)) {
             throw new BusinessException(
-                    "Ja existe uma solicitacao pendente de " + pet.getName()
+                    "Já existe uma solicitação pendente de " + pet.getName()
                     + " para " + veterinarian.getName() + ".");
         }
 
-        return linkRepository.save(VetLinkRequest.builder()
+        VetLinkRequest saved = linkRepository.save(VetLinkRequest.builder()
                 .pet(pet)
                 .veterinarian(veterinarian)
                 .requestedBy(requester)
                 .status(LinkRequestStatus.PENDING)
                 .message(message)
                 .build());
+
+        // Avisa o veterinario de forma assincrona (RabbitMQ), apos o commit.
+        notificationPublisher.linkRequested(saved);
+        return saved;
     }
 
     // ---------------------------------------------------------------- decisoes
@@ -118,6 +124,7 @@ public class VetLinkRequestService {
 
         // O vinculo com veterinario vale 25 dos 100 pontos do health score.
         petHealthService.evictCache(pet.getId());
+        notificationPublisher.linkDecided(request);
         return request;
     }
 
@@ -125,6 +132,7 @@ public class VetLinkRequestService {
     public VetLinkRequest reject(Long requestId, String note, Long veterinarianId) {
         VetLinkRequest request = findForVeterinarian(requestId, veterinarianId);
         applyTransition(request, LinkRequestStatus.REJECTED, note);
+        notificationPublisher.linkDecided(request);
         return request;
     }
 
@@ -150,8 +158,8 @@ public class VetLinkRequestService {
         LinkRequestStatus current = request.getStatus();
 
         if (!current.canTransitionTo(target)) {
-            throw new BusinessException("Esta solicitacao ja foi "
-                    + current.getLabel().toLowerCase() + " e nao pode mais ser alterada.");
+            throw new BusinessException("Esta solicitação já foi "
+                    + current.getLabel().toLowerCase() + " e não pode mais ser alterada.");
         }
 
         request.setStatus(target);
@@ -175,12 +183,12 @@ public class VetLinkRequestService {
 
     private VetLinkRequest findRequestOrThrow(Long requestId) {
         return linkRepository.findWithDetailsById(requestId)
-                .orElseThrow(() -> new ResourceNotFoundException("Solicitacao de vinculo", requestId));
+                .orElseThrow(() -> new ResourceNotFoundException("Solicitação de vínculo", requestId));
     }
 
     private User findUserOrThrow(Long userId) {
         return userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("Usuario", userId));
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário", userId));
     }
 
     private Long tutorIdOf(User user) {

@@ -27,6 +27,12 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     List<User> findByRoleOrderByNameAsc(Role role);
 
+    /** Conta de acesso de um tutor: destinatario das notificacoes sobre os pets dele. */
+    Optional<User> findByTutorId(Long tutorId);
+
+    /** Conta de acesso de um veterinario: destinatario dos pedidos de vinculo. */
+    Optional<User> findByVeterinarianId(Long veterinarianId);
+
     /**
      * Listagem do painel administrativo. A ordenacao vai no nome do metodo, e
      * nao em um Sort, porque assim o @EntityGraph se aplica -- o findAll(Sort)
