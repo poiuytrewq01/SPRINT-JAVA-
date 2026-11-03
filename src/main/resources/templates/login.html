@@ -15,13 +15,13 @@
 <div class="tela-login">
     <div class="caixa-login">
         <h1>PetHealth</h1>
-        <p class="subtitulo">Saude e cuidado continuo do seu pet.</p>
+        <p class="subtitulo">Saúde e cuidado contínuo do seu pet.</p>
 
         <div class="aviso erro" th:if="${erroLogin}" role="alert">
-            E-mail ou senha invalidos.
+            E-mail ou senha inválidos.
         </div>
         <div class="aviso sucesso" th:if="${logoutRealizado}" role="status">
-            Sessao encerrada.
+            Sessão encerrada.
         </div>
 
         <!--
@@ -38,7 +38,7 @@
             <div class="campo">
                 <label for="email">E-mail</label>
                 <input type="email" id="email" name="email" required autofocus
-                       autocomplete="username" placeholder="voce@email.com">
+                       autocomplete="username" placeholder="você@email.com">
             </div>
 
             <div class="campo">
@@ -51,12 +51,12 @@
         </form>
 
         <div class="credenciais-demo">
-            <strong>Usuarios de demonstracao</strong> &mdash; senha <code>senha123</code>
+            <strong>Usuários de demonstração</strong> &mdash; senha <code>senha123</code>
             <table>
                 <tr><td>Tutora</td><td>maria@email.com</td></tr>
                 <tr><td>Tutor</td><td>joao@email.com</td></tr>
-                <tr><td>Veterinaria</td><td>ana@clinicapet.com</td></tr>
-                <tr><td>Veterinario</td><td>carlos@clinicapet.com</td></tr>
+                <tr><td>Veterinária</td><td>ana@clinicapet.com</td></tr>
+                <tr><td>Veterinário</td><td>carlos@clinicapet.com</td></tr>
                 <tr><td>Administrador</td><td>admin@pethealth.com</td></tr>
             </table>
         </div>

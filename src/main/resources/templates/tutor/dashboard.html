@@ -7,13 +7,13 @@
     <div class="cabecalho-pagina">
         <div>
             <h1>Meus pets</h1>
-            <p class="subtitulo">Acompanhe a saude e a rotina de cuidados de cada um.</p>
+            <p class="subtitulo">Acompanhe a saúde e a rotina de cuidados de cada um.</p>
         </div>
         <a class="botao" th:href="@{/tutor/pets/novo}">Cadastrar pet</a>
     </div>
 
     <div class="vazio cartao" th:if="${#lists.isEmpty(pets)}">
-        Voce ainda nao cadastrou nenhum pet.
+        Você ainda não cadastrou nenhum pet.
         <div class="acoes" style="justify-content:center; margin-top:1rem">
             <a class="botao" th:href="@{/tutor/pets/novo}">Cadastrar o primeiro</a>
         </div>
@@ -32,13 +32,13 @@
                     <h2 th:text="${pet.name}">Nome</h2>
                     <p class="subtitulo" style="font-size:.85rem"
                        th:text="${pet.species.label} + (${pet.breed} != null ? ' · ' + ${pet.breed} : '')">
-                        Especie
+                        Espécie
                     </p>
                 </div>
-                <span class="etiqueta" th:text="${resumo.levelLabel}">Nivel</span>
+                <span class="etiqueta" th:text="${resumo.levelLabel}">Nível</span>
             </div>
 
-            <label th:text="'Saude ' + ${resumo.healthScore} + '/100'">Saude</label>
+            <label th:text="'Saúde ' + ${resumo.healthScore} + '/100'">Saúde</label>
             <div class="barra"
                  th:classappend="${resumo.healthScore} &lt; 50 ? ' critico' : (${resumo.healthScore} &lt; 75 ? ' atencao' : '')">
                 <span th:style="'width:' + ${resumo.healthScore} + '%'"></span>
@@ -53,7 +53,7 @@
             <div class="grade grade-3" style="margin:1rem 0">
                 <div class="indicador">
                     <div class="valor" th:text="${resumo.currentStreak}">0</div>
-                    <div class="rotulo">Sequencia</div>
+                    <div class="rotulo">Sequência</div>
                 </div>
                 <div class="indicador">
                     <div class="valor" th:text="${resumo.overdueVaccines}">0</div>
@@ -66,8 +66,8 @@
             </div>
 
             <div class="aviso erro" th:if="${resumo.needsAttention()}" style="margin-bottom:1rem">
-                <span th:if="${resumo.overdueVaccines > 0}">Ha vacinas vencidas. </span>
-                <span th:unless="${resumo.hasRecentCheckup}">Sem consulta nos ultimos 12 meses.</span>
+                <span th:if="${resumo.overdueVaccines > 0}">Há vacinas vencidas. </span>
+                <span th:unless="${resumo.hasRecentCheckup}">Sem consulta nos últimos 12 meses.</span>
             </div>
 
             <div class="acoes">
@@ -75,7 +75,7 @@
                 <span class="dica" th:if="${pet.veterinarian != null}"
                       th:text="'Vet: ' + ${pet.veterinarian.name}">Vet</span>
                 <a class="dica" th:if="${pet.veterinarian == null}" th:href="@{/tutor/vinculos}">
-                    Sem veterinario &mdash; solicitar vinculo
+                    Sem veterinário &mdash; solicitar vínculo
                 </a>
             </div>
         </article>

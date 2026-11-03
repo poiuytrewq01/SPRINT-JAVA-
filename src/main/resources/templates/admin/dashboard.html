@@ -8,17 +8,17 @@
         <div>
             <h1>Painel da plataforma</h1>
             <p class="subtitulo">
-                Visao consolidada e contas de acesso. O perfil administrativo nao escreve
-                no historico clinico dos pets.
+                Visão consolidada e contas de acesso. O perfil administrativo não escreve
+                no histórico clínico dos pets.
             </p>
         </div>
-        <a class="botao secundario" th:href="@{/swagger-ui.html}">Documentacao da API</a>
+        <a class="botao secundario" th:href="@{/swagger-ui.html}">Documentação da API</a>
     </div>
 
     <div class="grade grade-3">
         <div class="cartao indicador">
             <div class="valor" th:text="${resumo.usuarios}">0</div>
-            <div class="rotulo">Usuarios</div>
+            <div class="rotulo">Usuários</div>
         </div>
         <div class="cartao indicador">
             <div class="valor" th:text="${resumo.tutores}">0</div>
@@ -26,7 +26,7 @@
         </div>
         <div class="cartao indicador">
             <div class="valor" th:text="${resumo.veterinarios}">0</div>
-            <div class="rotulo">Veterinarios</div>
+            <div class="rotulo">Veterinários</div>
         </div>
         <div class="cartao indicador">
             <div class="valor" th:text="${resumo.pets}">0</div>
@@ -38,21 +38,58 @@
         </div>
         <div class="cartao indicador">
             <div class="valor" th:text="${resumo.prontuarios}">0</div>
-            <div class="rotulo">Prontuarios</div>
+            <div class="rotulo">Prontuários</div>
         </div>
     </div>
+
+    <!--
+      Situacao ao vivo da fila do RabbitMQ (MessagingStatusService). Durante a
+      demonstracao, aprovar um vinculo faz "entregues" subir: a mensagem
+      passou pela fila e foi gravada pelo consumidor.
+    -->
+    <section class="cartao">
+        <div class="status-fila">
+            <h2>Mensageria (RabbitMQ)</h2>
+            <span class="etiqueta sucesso" th:if="${mensageria.online}">Conectado</span>
+            <span class="etiqueta erro" th:unless="${mensageria.online}">Indisponível</span>
+        </div>
+        <p class="subtitulo">
+            Notificações de vínculo e de retorno são publicadas na exchange
+            <code>pethealth.notifications</code> e consumidas de forma assíncrona.
+            Mensagens que falham três vezes vão para a fila de mensagens mortas (DLQ).
+        </p>
+
+        <div class="grade grade-3">
+            <div class="cartao indicador">
+                <div class="valor" th:text="${mensageria.pendentes}">0</div>
+                <div class="rotulo">Aguardando na fila</div>
+            </div>
+            <div class="cartao indicador">
+                <div class="valor" th:text="${mensageria.consumidores}">0</div>
+                <div class="rotulo">Consumidores conectados</div>
+            </div>
+            <div class="cartao indicador">
+                <div class="valor" th:text="${mensageria.naDlq}">0</div>
+                <div class="rotulo">Na DLQ</div>
+            </div>
+            <div class="cartao indicador">
+                <div class="valor" th:text="${mensageria.entregues}">0</div>
+                <div class="rotulo">Notificações entregues</div>
+            </div>
+        </div>
+    </section>
 
     <section class="cartao">
         <h2>Contas de acesso</h2>
         <p class="subtitulo">
-            A senha nunca aparece aqui: o banco guarda apenas o hash BCrypt, que nao pode
+            A senha nunca aparece aqui: o banco guarda apenas o hash BCrypt, que não pode
             ser revertido para o texto original.
         </p>
 
         <div class="tabela-rolavel">
             <table>
                 <thead>
-                <tr><th>Nome</th><th>E-mail</th><th>Perfil</th><th>Vinculo</th><th>Situacao</th></tr>
+                <tr><th>Nome</th><th>E-mail</th><th>Perfil</th><th>Vínculo</th><th>Situação</th></tr>
                 </thead>
                 <tbody>
                 <tr th:each="usuario : ${usuarios}">

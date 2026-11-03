@@ -1,24 +1,24 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{layout :: pagina('Veterinarios', ~{:: main})}" lang="pt-BR">
+      th:replace="~{layout :: pagina('Veterinários', ~{:: main})}" lang="pt-BR">
 <body>
 <main>
 
     <div class="cabecalho-pagina">
         <div>
-            <h1>Veterinarios</h1>
+            <h1>Veterinários</h1>
             <p class="subtitulo">
-                O vinculo so passa a valer depois que o profissional aceita a solicitacao.
+                O vínculo só passa a valer depois que o profissional aceita a solicitação.
             </p>
         </div>
     </div>
 
     <!-- ============ FLUXO 2 (tutor): abrir solicitacao de vinculo ========= -->
     <section class="cartao" style="max-width:640px">
-        <h2>Solicitar vinculo</h2>
+        <h2>Solicitar vínculo</h2>
 
         <div class="vazio" th:if="${#lists.isEmpty(pets)}">
-            Cadastre um pet antes de solicitar vinculo.
+            Cadastre um pet antes de solicitar vínculo.
         </div>
 
         <form th:unless="${#lists.isEmpty(pets)}"
@@ -36,7 +36,7 @@
                 </div>
 
                 <div class="campo" th:classappend="${#fields.hasErrors('veterinarianId')} ? ' campo-em-erro'">
-                    <label for="veterinarianId">Veterinario</label>
+                    <label for="veterinarianId">Veterinário</label>
                     <select id="veterinarianId" th:field="*{veterinarianId}">
                         <option value="">Selecione</option>
                         <option th:each="vet : ${veterinarios}" th:value="${vet.id}"
@@ -52,28 +52,28 @@
             <div class="campo" th:classappend="${#fields.hasErrors('message')} ? ' campo-em-erro'">
                 <label for="message">Mensagem (opcional)</label>
                 <textarea id="message" th:field="*{message}" maxlength="300"
-                          placeholder="Gostaria de acompanhar meu pet na sua clinica."></textarea>
+                          placeholder="Gostaria de acompanhar meu pet na sua clínica."></textarea>
                 <span class="erro-campo" th:if="${#fields.hasErrors('message')}" th:errors="*{message}"></span>
             </div>
 
-            <button type="submit" class="botao">Enviar solicitacao</button>
+            <button type="submit" class="botao">Enviar solicitação</button>
         </form>
     </section>
 
     <!-- ==================== acompanhamento das solicitacoes ============== -->
     <section class="cartao">
-        <h2>Minhas solicitacoes</h2>
+        <h2>Minhas solicitações</h2>
 
         <div class="vazio" th:if="${#lists.isEmpty(solicitacoes)}">
-            Nenhuma solicitacao enviada ainda.
+            Nenhuma solicitação enviada ainda.
         </div>
 
         <div class="tabela-rolavel" th:unless="${#lists.isEmpty(solicitacoes)}">
             <table>
                 <thead>
                 <tr>
-                    <th>Pet</th><th>Veterinario</th><th>Enviada em</th>
-                    <th>Situacao</th><th>Resposta</th><th></th>
+                    <th>Pet</th><th>Veterinário</th><th>Enviada em</th>
+                    <th>Situação</th><th>Resposta</th><th></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -91,7 +91,7 @@
                               th:classappend="${pedido.status.name() == 'APPROVED'} ? ' sucesso'
                                             : (${pedido.status.name() == 'REJECTED'} ? ' erro'
                                             : (${pedido.status.name() == 'CANCELLED'} ? ' neutra' : ' alerta'))"
-                              th:text="${pedido.status.label}">Situacao</span>
+                              th:text="${pedido.status.label}">Situação</span>
                     </td>
                     <td class="dica" th:text="${pedido.responseNote} ?: '—'">nota</td>
                     <td>

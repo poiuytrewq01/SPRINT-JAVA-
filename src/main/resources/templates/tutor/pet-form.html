@@ -7,7 +7,7 @@
     <div class="cabecalho-pagina">
         <div>
             <h1>Cadastrar pet</h1>
-            <p class="subtitulo">O vinculo com um veterinario e feito depois, na aba Veterinarios.</p>
+            <p class="subtitulo">O vínculo com um veterinário é feito depois, na aba Veterinários.</p>
         </div>
         <a class="botao secundario" th:href="@{/tutor}">Voltar</a>
     </div>
@@ -33,17 +33,17 @@
 
             <div class="linha-campos">
                 <div class="campo" th:classappend="${#fields.hasErrors('species')} ? ' campo-em-erro'">
-                    <label for="species">Especie</label>
+                    <label for="species">Espécie</label>
                     <select id="species" th:field="*{species}">
                         <option value="">Selecione</option>
                         <!-- th:value grava o nome do enum; th:text mostra o rotulo em portugues. -->
-                        <option th:each="e : ${especies}" th:value="${e}" th:text="${e.label}">Especie</option>
+                        <option th:each="e : ${especies}" th:value="${e}" th:text="${e.label}">Espécie</option>
                     </select>
                     <span class="erro-campo" th:if="${#fields.hasErrors('species')}" th:errors="*{species}"></span>
                 </div>
 
                 <div class="campo" th:classappend="${#fields.hasErrors('breed')} ? ' campo-em-erro'">
-                    <label for="breed">Raca</label>
+                    <label for="breed">Raça</label>
                     <input type="text" id="breed" th:field="*{breed}" maxlength="80" placeholder="Labrador">
                     <span class="erro-campo" th:if="${#fields.hasErrors('breed')}" th:errors="*{breed}"></span>
                 </div>
@@ -65,16 +65,16 @@
                 <div class="campo">
                     <label for="gender">Sexo</label>
                     <select id="gender" th:field="*{gender}">
-                        <option value="">Nao informado</option>
+                        <option value="">Não informado</option>
                         <option th:each="g : ${generos}" th:value="${g}"
-                                th:text="${g.name() == 'MALE'} ? 'Macho' : 'Femea'">Sexo</option>
+                                th:text="${g.name() == 'MALE'} ? 'Macho' : 'Fêmea'">Sexo</option>
                     </select>
                 </div>
             </div>
 
             <div class="campo campo-inline">
                 <input type="checkbox" id="profilePublic" th:field="*{profilePublic}">
-                <label for="profilePublic">Perfil publico (outros tutores podem ver)</label>
+                <label for="profilePublic">Perfil público (outros tutores podem ver)</label>
             </div>
 
             <div class="acoes">

@@ -1,5 +1,6 @@
 package br.com.fiap.challenge.web;
 
+import br.com.fiap.challenge.messaging.MessagingStatusService;
 import br.com.fiap.challenge.service.PlatformOverviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -27,11 +28,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class AdminViewController {
 
     private final PlatformOverviewService overviewService;
+    private final MessagingStatusService messagingStatusService;
 
     @GetMapping
     public String dashboard(Model model) {
         model.addAttribute("resumo", overviewService.summarize());
         model.addAttribute("usuarios", overviewService.findAllUsers());
+        model.addAttribute("mensageria", messagingStatusService.current());
         return "admin/dashboard";
     }
 }

@@ -35,14 +35,23 @@
         <nav class="menu">
             <th:block sec:authorize="hasRole('TUTOR')">
                 <a th:href="@{/tutor}">Meus pets</a>
-                <a th:href="@{/tutor/vinculos}">Veterinarios</a>
+                <a th:href="@{/tutor/vinculos}">Veterinários</a>
                 <a th:href="@{/tutor/pets/novo}">Cadastrar pet</a>
             </th:block>
 
             <th:block sec:authorize="hasRole('VETERINARIAN')">
                 <a th:href="@{/vet}">Pacientes</a>
-                <a th:href="@{/vet/solicitacoes}">Solicitacoes</a>
+                <a th:href="@{/vet/solicitacoes}">Solicitações</a>
             </th:block>
+
+            <!--
+              O contador vem do NotificationModelAdvice, que o coloca no Model
+              de toda tela. O admin nao recebe notificacoes, entao nao ve o item.
+            -->
+            <a sec:authorize="hasAnyRole('TUTOR', 'VETERINARIAN')" th:href="@{/notificacoes}">
+                Notificações<span class="contador" th:if="${notificacoesNaoLidas > 0}"
+                                  th:text="${notificacoesNaoLidas}">0</span>
+            </a>
 
             <th:block sec:authorize="hasRole('ADMIN')">
                 <a th:href="@{/admin}">Painel</a>
@@ -51,7 +60,7 @@
         </nav>
 
         <div class="identidade" sec:authorize="isAuthenticated()">
-            <span th:text="${#authentication.principal.name}">Usuario</span>
+            <span th:text="${#authentication.principal.name}">Usuário</span>
             <span class="etiqueta neutra" th:text="${#authentication.principal.role.label}">Perfil</span>
 
             <!--
