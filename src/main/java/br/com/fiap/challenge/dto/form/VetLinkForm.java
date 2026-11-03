@@ -13,9 +13,9 @@ public class VetLinkForm {
     @NotNull(message = "Escolha o pet")
     private Long petId;
 
-    @NotNull(message = "Escolha o veterinario")
+    @NotNull(message = "Escolha o veterinário")
     private Long veterinarianId;
 
-    @Size(max = 300, message = "A mensagem deve ter no maximo 300 caracteres")
+    @Size(max = 300, message = "A mensagem deve ter no máximo 300 caracteres")
     private String message;
 }

@@ -21,7 +21,7 @@ public class WebExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public String handleNotFound(ResourceNotFoundException ex, Model model) {
-        model.addAttribute("erroTitulo", "Registro nao encontrado");
+        model.addAttribute("erroTitulo", "Registro não encontrado");
         model.addAttribute("erroMensagem", ex.getMessage());
         return ERROR_VIEW;
     }
@@ -33,7 +33,7 @@ public class WebExceptionHandler {
      */
     @ExceptionHandler(BusinessException.class)
     public String handleBusiness(BusinessException ex, Model model) {
-        model.addAttribute("erroTitulo", "Operacao nao permitida");
+        model.addAttribute("erroTitulo", "Operação não permitida");
         model.addAttribute("erroMensagem", ex.getMessage());
         return ERROR_VIEW;
     }

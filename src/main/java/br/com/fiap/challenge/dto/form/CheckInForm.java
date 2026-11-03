@@ -24,11 +24,11 @@ public class CheckInForm {
     @NotNull(message = "Escolha o tipo de atividade")
     private ActivityType activityType;
 
-    @NotNull(message = "Informe a duracao")
-    @Min(value = 1, message = "A duracao minima e de 1 minuto")
-    @Max(value = 1440, message = "A duracao maxima e de 1440 minutos (24 horas)")
+    @NotNull(message = "Informe a duração")
+    @Min(value = 1, message = "A duração mínima é de 1 minuto")
+    @Max(value = 1440, message = "A duração máxima é de 1440 minutos (24 horas)")
     private Integer durationMinutes;
 
-    @Size(max = 500, message = "A observacao deve ter no maximo 500 caracteres")
+    @Size(max = 500, message = "A observação deve ter no máximo 500 caracteres")
     private String notes;
 }

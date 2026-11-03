@@ -20,25 +20,25 @@ import java.time.LocalDate;
 public class ClinicalRecordForm {
 
     @NotNull(message = "Informe a data do atendimento")
-    @PastOrPresent(message = "A data do atendimento nao pode ser futura")
+    @PastOrPresent(message = "A data do atendimento não pode ser futura")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate date = LocalDate.now();
 
     @NotBlank(message = "Descreva o atendimento")
-    @Size(max = 200, message = "A descricao deve ter no maximo 200 caracteres")
+    @Size(max = 200, message = "A descrição deve ter no máximo 200 caracteres")
     private String description;
 
-    @Size(max = 300, message = "O diagnostico deve ter no maximo 300 caracteres")
+    @Size(max = 300, message = "O diagnóstico deve ter no máximo 300 caracteres")
     private String diagnosis;
 
-    @Size(max = 500, message = "O tratamento deve ter no maximo 500 caracteres")
+    @Size(max = 500, message = "O tratamento deve ter no máximo 500 caracteres")
     private String treatment;
 
-    @DecimalMin(value = "0.1", message = "O peso minimo e 0,1 kg")
-    @DecimalMax(value = "300.0", message = "O peso maximo e 300 kg")
-    @Digits(integer = 3, fraction = 2, message = "Use no maximo duas casas decimais")
+    @DecimalMin(value = "0.1", message = "O peso mínimo é 0,1 kg")
+    @DecimalMax(value = "300.0", message = "O peso máximo é 300 kg")
+    @Digits(integer = 3, fraction = 2, message = "Use no máximo duas casas decimais")
     private BigDecimal weight;
 
-    @Size(max = 1000, message = "As observacoes devem ter no maximo 1000 caracteres")
+    @Size(max = 1000, message = "As observações devem ter no máximo 1000 caracteres")
     private String observations;
 }

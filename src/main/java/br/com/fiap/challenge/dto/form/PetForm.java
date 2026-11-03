@@ -17,13 +17,13 @@ import java.time.LocalDate;
 public class PetForm {
 
     @NotBlank(message = "Informe o nome do pet")
-    @Size(max = 50, message = "O nome deve ter no maximo 50 caracteres")
+    @Size(max = 50, message = "O nome deve ter no máximo 50 caracteres")
     private String name;
 
-    @NotNull(message = "Escolha a especie")
+    @NotNull(message = "Escolha a espécie")
     private Species species;
 
-    @Size(max = 80, message = "A raca deve ter no maximo 80 caracteres")
+    @Size(max = 80, message = "A raça deve ter no máximo 80 caracteres")
     private String breed;
 
     @NotNull(message = "Informe a data de nascimento")
@@ -31,9 +31,9 @@ public class PetForm {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate birthDate;
 
-    @DecimalMin(value = "0.1", message = "O peso minimo e 0,1 kg")
-    @DecimalMax(value = "300.0", message = "O peso maximo e 300 kg")
-    @Digits(integer = 3, fraction = 2, message = "Use no maximo duas casas decimais")
+    @DecimalMin(value = "0.1", message = "O peso mínimo é 0,1 kg")
+    @DecimalMax(value = "300.0", message = "O peso máximo é 300 kg")
+    @Digits(integer = 3, fraction = 2, message = "Use no máximo duas casas decimais")
     private BigDecimal weight;
 
     private Gender gender;
