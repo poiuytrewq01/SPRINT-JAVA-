@@ -13,3 +13,10 @@ spring:
     database-platform: org.hibernate.dialect.H2Dialect
   flyway:
     enabled: false
+  rabbitmq:
+    # Os testes nao dependem de um RabbitMQ rodando: os listeners nao sao
+    # iniciados. Produtor e consumidor sao testados com Mockito
+    # (NotificationRelayTest e NotificationServiceTest).
+    listener:
+      simple:
+        auto-startup: false
