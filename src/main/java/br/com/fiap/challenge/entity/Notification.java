@@ -47,7 +47,8 @@ public class Notification {
     @ToString.Include
     private NotificationType type;
 
-    @Column(nullable = false, length = 300)
+    /** 600: a recusa junta nomes e a observacao de ate 300 caracteres (ver V5). */
+    @Column(nullable = false, length = 600)
     private String message;
 
     @Column(nullable = false, length = 200)

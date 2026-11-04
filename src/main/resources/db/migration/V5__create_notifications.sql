@@ -17,7 +17,10 @@ CREATE TABLE notifications (
     event_id    UUID         NOT NULL,
     user_id     BIGINT       NOT NULL,
     type        VARCHAR(30)  NOT NULL,
-    message     VARCHAR(300) NOT NULL,
+    -- 600 e nao 300: a mensagem de recusa junta nome do veterinario, nome do
+    -- pet e a observacao (ate 300 caracteres) em um unico texto. Com 300 o
+    -- INSERT falharia e a notificacao iria para a DLQ.
+    message     VARCHAR(600) NOT NULL,
     -- Caminho interno da aplicacao, nunca uma URL externa.
     link        VARCHAR(200) NOT NULL,
     occurred_at TIMESTAMP    NOT NULL,
