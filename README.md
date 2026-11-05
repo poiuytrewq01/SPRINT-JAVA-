@@ -16,7 +16,7 @@ RabbitMQ**: as ações de um perfil geram notificações para o outro.
 | | |
 |---|---|
 | **Aplicação no ar** | [https://sprint-java.onrender.com](https://sprint-java.onrender.com/) |
-| **Vídeo da apresentação (Sprint 4)** | `PREENCHER: link do YouTube` |
+| **Vídeo da apresentação (Sprint 4)** | `Não entrgue` |
 | **Repositório** | https://github.com/poiuytrewq01/SPRINT-JAVA- |
 
 > A aplicação está no plano gratuito do Render. O contêiner hiberna após alguns
@@ -501,6 +501,16 @@ garantida nele.
 | Schema versionado (DDL) | [`src/main/resources/db/migration`](src/main/resources/db/migration) — V1 a V5 |
 | Regras no banco | constraints `CHECK`, `UNIQUE` e índice único parcial (tabela acima) |
 | Consultas analíticas | [`docs/banco-de-dados/consultas-analiticas.sql`](docs/banco-de-dados/consultas-analiticas.sql) |
+
+#### Evidências das consultas (DBeaver, banco do Render)
+
+| # | Consulta | Print |
+|---|---|---|
+| 1 | Pets com vacina vencida, por tutor | ![Consulta 1](docs/banco-de-dados/prints/consulta-1.png) |
+| 2 | Tempo de resposta dos veterinários | ![Consulta 2](docs/banco-de-dados/prints/consulta-2.png) |
+| 3 | Ranking de engajamento | ![Consulta 3](docs/banco-de-dados/prints/consulta-3.png) |
+| 4 | Notificações entregues pela fila | ![Consulta 4](docs/banco-de-dados/prints/consulta-4.png) |
+| 5 | Retornos agendados nos próximos 60 dias | ![Consulta 5](docs/banco-de-dados/prints/consulta-5.png) |
 
 As consultas analíticas usam `JOIN`, agregação com `FILTER`, função de janela
 (`RANK() OVER`) e aritmética de datas para responder perguntas de negócio:
