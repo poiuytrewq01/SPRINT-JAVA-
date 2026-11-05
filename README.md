@@ -485,9 +485,7 @@ notificações. O identificador do usuário vem sempre de
 
 ## Integração com as outras disciplinas
 
-> `PREENCHER:` confirmar com a equipe quais disciplinas do semestre entram
-> aqui e anexar as evidências produzidas em cada uma (documento, print,
-> link). As duas abaixo já têm evidência dentro deste repositório.
+O PetHealth integra duas disciplinas do semestre: Banco de Dados e DevOps & Cloud.
 
 ### Banco de Dados
 
