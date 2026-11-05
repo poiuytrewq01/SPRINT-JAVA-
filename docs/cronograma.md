@@ -42,9 +42,8 @@
 
 ##  Sprint 3 — Thymeleaf, Flyway e Spring Security
 
-> `PREENCHER:` responsável de cada item. Os commits desta sprint saíram de uma
-> máquina do laboratório (autor "Laboratório FIAP"), então o cronograma é a
-> evidência de quem fez o quê.
+> Os commits desta sprint saíram de uma máquina do laboratório (autor
+> "Laboratório FIAP").
 
 | Atividade | Responsável | Status |
 |-----------|-------------|--------|
@@ -59,18 +58,13 @@
 
 ##  Sprint 4 — Entrega final
 
-> Proposta de divisão — ajustar ao que cada um efetivamente fez. O
-> responsável revisa, testa localmente, commita com a própria conta do GitHub
-> e apresenta a parte no vídeo.
-
 | Atividade | Responsável | Status |
 |-----------|-------------|--------|
-| Topologia RabbitMQ (exchange, fila, DLQ) e produtor após o commit | Pedro Gabriel Claes | |
-| Consumidor idempotente, migration V5 e tela de notificações | Matheus Arazin Oliveira | |
-| Refatoração das ações das telas (`RedirectFeedback`) e revisão de UI/acentuação | Artur Pioli Silva | |
-| Testes de mensageria, consultas analíticas SQL e README final | Kevin Martins | |
-| Deploy do RabbitMQ no CloudAMQP e variável no Render | Pedro Gabriel Claes | |
-| Gravação e edição do vídeo final | Todos | |
+| Mensageria com RabbitMQ, migration V5, tela de notificações e refatoração das telas (com apoio de IA) | Pedro Gabriel Claes | Concluído |
+| Teste do NotificationPublisher | Matheus Arazin Oliveira | Concluído |
+| Revisão da V5: correção do tamanho da coluna message | Artur Pioli Silva | Concluído |
+| README final e links da entrega | Kevin Martins | Concluído |
+| Deploy no Render | Pedro Gabriel Claes | Concluído |
 
 ---
 
