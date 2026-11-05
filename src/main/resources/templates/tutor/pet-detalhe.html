@@ -8,7 +8,7 @@
         <div>
             <h1 th:text="${pet.name}">Nome</h1>
             <p class="subtitulo">
-                <span th:text="${pet.species.label}">Especie</span>
+                <span th:text="${pet.species.label}">Espécie</span>
                 <span th:if="${pet.breed}" th:text="' · ' + ${pet.breed}"></span>
                 <span th:if="${pet.veterinarian != null}"
                       th:text="' · sob cuidados de ' + ${pet.veterinarian.name}"></span>
@@ -21,7 +21,7 @@
     <section class="cartao">
         <h2>Check-in de hoje</h2>
         <p class="subtitulo">
-            Um registro por dia mantem a sequencia viva. Perder um dia zera a contagem.
+            Um registro por dia mantém a sequência viva. Perder um dia zera a contagem.
         </p>
 
         <div class="grade grade-3" style="margin:1.1rem 0">
@@ -34,14 +34,14 @@
                 <div class="rotulo">Recorde</div>
             </div>
             <div class="indicador">
-                <div class="valor" style="font-size:1.15rem" th:text="${resumo.levelLabel}">Nivel</div>
-                <div class="rotulo">Nivel atual</div>
+                <div class="valor" style="font-size:1.15rem" th:text="${resumo.levelLabel}">Nível</div>
+                <div class="rotulo">Nível atual</div>
             </div>
         </div>
 
         <!-- Ja houve check-in hoje: o formulario da lugar a confirmacao. -->
         <div class="aviso sucesso" th:if="${checkInHoje}">
-            Atividade de hoje ja registrada. Volte amanha para manter a sequencia.
+            Atividade de hoje já registrada. Volte amanhã para manter a sequência.
         </div>
 
         <form th:unless="${checkInHoje}"
@@ -60,7 +60,7 @@
                 </div>
 
                 <div class="campo" th:classappend="${#fields.hasErrors('durationMinutes')} ? ' campo-em-erro'">
-                    <label for="durationMinutes">Duracao (min)</label>
+                    <label for="durationMinutes">Duração (min)</label>
                     <input type="number" id="durationMinutes" th:field="*{durationMinutes}" min="1" max="1440">
                     <span class="erro-campo" th:if="${#fields.hasErrors('durationMinutes')}"
                           th:errors="*{durationMinutes}"></span>
@@ -68,7 +68,7 @@
             </div>
 
             <div class="campo" th:classappend="${#fields.hasErrors('notes')} ? ' campo-em-erro'">
-                <label for="notes">Observacao</label>
+                <label for="notes">Observação</label>
                 <textarea id="notes" th:field="*{notes}" maxlength="500"
                           placeholder="Passeio no parque, 3 km."></textarea>
                 <span class="erro-campo" th:if="${#fields.hasErrors('notes')}" th:errors="*{notes}"></span>
@@ -82,7 +82,7 @@
 
         <!-- ========================== indicadores de saude ================ -->
         <section class="cartao">
-            <h2>Saude</h2>
+            <h2>Saúde</h2>
 
             <label th:text="'Score ' + ${resumo.healthScore} + '/100'">Score</label>
             <div class="barra"
@@ -98,9 +98,9 @@
 
         <!-- ==================== FLUXO 3 (tutor): lembretes ================ -->
         <section class="cartao">
-            <h2>Proximos 30 dias</h2>
+            <h2>Próximos 30 dias</h2>
 
-            <div class="vazio" th:if="${#lists.isEmpty(lembretes)}">Nenhum lembrete no periodo.</div>
+            <div class="vazio" th:if="${#lists.isEmpty(lembretes)}">Nenhum lembrete no período.</div>
 
             <div class="tabela-rolavel" th:unless="${#lists.isEmpty(lembretes)}">
                 <table>
@@ -138,7 +138,7 @@
         <div class="tabela-rolavel" th:unless="${#lists.isEmpty(vacinas)}">
             <table>
                 <thead>
-                <tr><th>Vacina</th><th>Aplicacao</th><th>Proxima dose</th><th>Situacao</th></tr>
+                <tr><th>Vacina</th><th>Aplicação</th><th>Próxima dose</th><th>Situação</th></tr>
                 </thead>
                 <tbody>
                 <tr th:each="vacina : ${vacinas}">
@@ -162,22 +162,22 @@
 
     <!-- ============================== prontuarios ======================== -->
     <section class="cartao">
-        <h2>Historico clinico</h2>
+        <h2>Histórico clínico</h2>
 
         <div class="vazio" th:if="${#lists.isEmpty(prontuarios)}">
-            Nenhum atendimento registrado. Apenas o veterinario vinculado pode incluir registros.
+            Nenhum atendimento registrado. Apenas o veterinário vinculado pode incluir registros.
         </div>
 
         <div class="tabela-rolavel" th:unless="${#lists.isEmpty(prontuarios)}">
             <table>
                 <thead>
-                <tr><th>Data</th><th>Atendimento</th><th>Diagnostico</th><th>Veterinario</th></tr>
+                <tr><th>Data</th><th>Atendimento</th><th>Diagnóstico</th><th>Veterinário</th></tr>
                 </thead>
                 <tbody>
                 <tr th:each="registro : ${prontuarios}">
                     <td th:text="${#temporals.format(registro.date, 'dd/MM/yyyy')}">data</td>
-                    <td th:text="${registro.description}">descricao</td>
-                    <td th:text="${registro.diagnosis} ?: '—'">diagnostico</td>
+                    <td th:text="${registro.description}">descrição</td>
+                    <td th:text="${registro.diagnosis} ?: '—'">diagnóstico</td>
                     <td th:text="${registro.veterinarianName} ?: '—'">vet</td>
                 </tr>
                 </tbody>

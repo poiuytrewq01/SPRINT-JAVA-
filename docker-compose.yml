@@ -1,4 +1,4 @@
-# PostgreSQL para desenvolvimento local.
+# PostgreSQL e RabbitMQ para desenvolvimento local.
 #
 # Sobe o banco na porta padrao 5432, com usuario, senha e database iguais aos
 # valores default do application.yaml -- assim a aplicacao roda sem nenhuma
@@ -26,6 +26,21 @@ services:
       test: ["CMD-SHELL", "pg_isready -U pethealth -d pethealth"]
       interval: 5s
       timeout: 3s
+      retries: 10
+
+  # Broker de mensagens das notificacoes. A imagem "management" inclui o
+  # painel web em http://localhost:15672 (usuario e senha: guest), onde da
+  # para ver a fila, a DLQ e as mensagens passando.
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    container_name: pethealth-rabbitmq
+    ports:
+      - "5672:5672"     # protocolo AMQP, usado pela aplicacao
+      - "15672:15672"   # painel de administracao
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
       retries: 10
 
 volumes:

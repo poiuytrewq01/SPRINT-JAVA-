@@ -18,7 +18,7 @@ public enum Role {
     TUTOR("Tutor", "/tutor"),
 
     /** Profissional: atende os pets vinculados, registra prontuarios e responde solicitacoes. */
-    VETERINARIAN("Veterinario", "/vet"),
+    VETERINARIAN("Veterinário", "/vet"),
 
     /** Operacao da plataforma: visao consolidada, sem acesso de escrita ao dominio clinico. */
     ADMIN("Administrador", "/admin");

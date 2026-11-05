@@ -18,7 +18,7 @@ public enum Species {
     CAT("Gato"),
     BIRD("Ave"),
     RODENT("Roedor"),
-    REPTILE("Reptil"),
+    REPTILE("Réptil"),
     RABBIT("Coelho"),
     OTHER("Outro");
 

@@ -7,34 +7,34 @@
     <div class="cabecalho-pagina">
         <div>
             <h1>Meus pacientes</h1>
-            <p class="subtitulo">Pets cujo vinculo voce aprovou.</p>
+            <p class="subtitulo">Pets cujo vínculo você aprovou.</p>
         </div>
         <a class="botao" th:href="@{/vet/solicitacoes}">
-            Solicitacoes
+            Solicitações
             <span th:if="${solicitacoesPendentes > 0}" th:text="'(' + ${solicitacoesPendentes} + ')'"></span>
         </a>
     </div>
 
     <div class="aviso info" th:if="${solicitacoesPendentes > 0}">
-        Voce tem <strong th:text="${solicitacoesPendentes}">0</strong> solicitacao(oes) de vinculo aguardando resposta.
+        Você tem <strong th:text="${solicitacoesPendentes}">0</strong> solicitação(ões) de vínculo aguardando resposta.
         <a th:href="@{/vet/solicitacoes}">Analisar agora</a>.
     </div>
 
     <div class="vazio cartao" th:if="${#lists.isEmpty(pacientes)}">
-        Nenhum paciente vinculado ainda. Os vinculos comecam com uma solicitacao do tutor.
+        Nenhum paciente vinculado ainda. Os vínculos começam com uma solicitação do tutor.
     </div>
 
     <section class="cartao" th:unless="${#lists.isEmpty(pacientes)}">
         <div class="tabela-rolavel">
             <table>
                 <thead>
-                <tr><th>Paciente</th><th>Especie / raca</th><th>Tutor</th><th>Contato</th><th></th></tr>
+                <tr><th>Paciente</th><th>Espécie / raça</th><th>Tutor</th><th>Contato</th><th></th></tr>
                 </thead>
                 <tbody>
                 <tr th:each="pet : ${pacientes}">
                     <td><strong th:text="${pet.name}">Nome</strong></td>
                     <td>
-                        <span th:text="${pet.species.label}">Especie</span>
+                        <span th:text="${pet.species.label}">Espécie</span>
                         <span class="dica" th:if="${pet.breed}" th:text="' · ' + ${pet.breed}"></span>
                     </td>
                     <td th:text="${pet.tutor.name}">Tutor</td>

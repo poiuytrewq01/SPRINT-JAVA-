@@ -1,8 +1,8 @@
 #  Cronograma de Desenvolvimento — Challenge Clyvo-Vet
 
 **Disciplina:** Java Advanced — FIAP  
-**Sprint:** 1-2  
-**Período:** Abril — Maio 2026
+**Sprints:** 1 a 4  
+**Período:** Abril — Novembro 2026
 
 ---
 
@@ -37,6 +37,40 @@
 | 7 | 19/05 – 23/05 | Testes dos endpoints via Postman — exportação da collection | Kevin Martins |  Concluído |
 | 7 | 19/05 – 23/05 | Elaboração do README e Cronograma | Kevin Martins |  Concluído |
 | 7 | 19/05 – 23/05 | Push final para repositório público no GitHub | Todos |  Concluído |
+
+---
+
+##  Sprint 3 — Thymeleaf, Flyway e Spring Security
+
+> `PREENCHER:` responsável de cada item. Os commits desta sprint saíram de uma
+> máquina do laboratório (autor "Laboratório FIAP"), então o cronograma é a
+> evidência de quem fez o quê.
+
+| Atividade | Responsável | Status |
+|-----------|-------------|--------|
+| PostgreSQL, Thymeleaf e Security no build; configuração por ambiente | | Concluído |
+| Versionamento do banco com Flyway (V1–V4) | | Concluído |
+| Autenticação BCrypt e proteção de rotas por perfil | | Concluído |
+| Fluxo de solicitação e aprovação de vínculo | | Concluído |
+| Telas Thymeleaf para tutor, veterinário e administrador | | Concluído |
+| Containerização e deploy no Render | | Concluído |
+
+---
+
+##  Sprint 4 — Entrega final
+
+> Proposta de divisão — ajustar ao que cada um efetivamente fez. O
+> responsável revisa, testa localmente, commita com a própria conta do GitHub
+> e apresenta a parte no vídeo.
+
+| Atividade | Responsável | Status |
+|-----------|-------------|--------|
+| Topologia RabbitMQ (exchange, fila, DLQ) e produtor após o commit | Pedro Gabriel Claes | |
+| Consumidor idempotente, migration V5 e tela de notificações | Matheus Arazin Oliveira | |
+| Refatoração das ações das telas (`RedirectFeedback`) e revisão de UI/acentuação | Artur Pioli Silva | |
+| Testes de mensageria, consultas analíticas SQL e README final | Kevin Martins | |
+| Deploy do RabbitMQ no CloudAMQP e variável no Render | Pedro Gabriel Claes | |
+| Gravação e edição do vídeo final | Todos | |
 
 ---
 

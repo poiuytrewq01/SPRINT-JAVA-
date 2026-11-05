@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{layout :: pagina('Solicitacoes', ~{:: main})}" lang="pt-BR">
+      th:replace="~{layout :: pagina('Solicitações', ~{:: main})}" lang="pt-BR">
 <body>
 <main>
 
     <div class="cabecalho-pagina">
         <div>
-            <h1>Solicitacoes de vinculo</h1>
+            <h1>Solicitações de vínculo</h1>
             <p class="subtitulo">
-                Aprovar cria o vinculo e libera o prontuario do pet para voce.
+                Aprovar cria o vínculo e libera o prontuário do pet para você.
             </p>
         </div>
         <a class="botao secundario" th:href="@{/vet}">Voltar</a>
@@ -19,7 +19,7 @@
         <h2>Aguardando sua resposta</h2>
 
         <div class="vazio" th:if="${#lists.isEmpty(pendentes)}">
-            Nenhuma solicitacao pendente.
+            Nenhuma solicitação pendente.
         </div>
 
         <article th:each="pedido : ${pendentes}" class="cartao"
@@ -50,7 +50,7 @@
                 <form th:action="@{/vet/solicitacoes/{id}/aprovar(id=${pedido.id})}" method="post"
                       class="acoes">
                     <input type="text" name="observacao" maxlength="300"
-                           placeholder="Observacao (opcional)" style="min-width:230px">
+                           placeholder="Observação (opcional)" style="min-width:230px">
                     <button type="submit" class="botao">Aprovar</button>
                 </form>
 
@@ -63,15 +63,15 @@
 
     <!-- ============================== historico ========================== -->
     <section class="cartao">
-        <h2>Historico</h2>
+        <h2>Histórico</h2>
 
-        <div class="vazio" th:if="${historico.isEmpty()}">Nenhuma solicitacao registrada.</div>
+        <div class="vazio" th:if="${historico.isEmpty()}">Nenhuma solicitação registrada.</div>
 
         <div class="tabela-rolavel" th:unless="${historico.isEmpty()}">
             <table>
                 <thead>
                 <tr><th>Pet</th><th>Tutor</th><th>Solicitada</th><th>Respondida</th>
-                    <th>Situacao</th><th>Observacao</th></tr>
+                    <th>Situação</th><th>Observação</th></tr>
                 </thead>
                 <tbody>
                 <tr th:each="pedido : ${historico.content}">
@@ -85,7 +85,7 @@
                               th:classappend="${pedido.status.name() == 'APPROVED'} ? ' sucesso'
                                             : (${pedido.status.name() == 'REJECTED'} ? ' erro'
                                             : (${pedido.status.name() == 'CANCELLED'} ? ' neutra' : ' alerta'))"
-                              th:text="${pedido.status.label}">Situacao</span>
+                              th:text="${pedido.status.label}">Situação</span>
                     </td>
                     <td class="dica" th:text="${pedido.responseNote} ?: '—'">nota</td>
                 </tr>
@@ -100,11 +100,11 @@
                th:href="@{/vet/solicitacoes(pagina=${historico.number - 1})}">Anterior</a>
 
             <span class="dica"
-                  th:text="'Pagina ' + (${historico.number} + 1) + ' de ' + ${historico.totalPages}">1 de 1</span>
+                  th:text="'Página ' + (${historico.number} + 1) + ' de ' + ${historico.totalPages}">1 de 1</span>
 
             <a class="botao secundario compacto"
                th:if="${!historico.last}"
-               th:href="@{/vet/solicitacoes(pagina=${historico.number + 1})}">Proxima</a>
+               th:href="@{/vet/solicitacoes(pagina=${historico.number + 1})}">Próxima</a>
         </div>
     </section>
 

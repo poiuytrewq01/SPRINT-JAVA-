@@ -5,6 +5,7 @@ import br.com.fiap.challenge.dto.response.ClinicalRecordResponse;
 import br.com.fiap.challenge.entity.ClinicalRecord;
 import br.com.fiap.challenge.enums.ReminderType;
 import br.com.fiap.challenge.exception.ResourceNotFoundException;
+import br.com.fiap.challenge.messaging.NotificationPublisher;
 import br.com.fiap.challenge.repository.ClinicalRecordRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -34,6 +35,7 @@ public class ClinicalRecordService {
     private final PetService petService;
     private final VeterinarianService veterinarianService;
     private final PetHealthService petHealthService;
+    private final NotificationPublisher notificationPublisher;
 
     /**
      * Lista prontuários com suporte a busca por palavra-chave em descrição e diagnóstico.
@@ -71,21 +73,23 @@ public class ClinicalRecordService {
                         ? veterinarianService.getVetOrThrow(request.veterinarianId()) : null)
                 .build();
 
-        record = clinicalRecordRepository.save(record);
+        ClinicalRecord saved = clinicalRecordRepository.save(record);
 
         // Lembrete automático de retorno: padrão semestral de acompanhamento
         // preventivo. Um prontuário antigo, cadastrado para completar o
         // histórico, produz uma data de retorno já vencida — nesse caso o
-        // ReminderService não agenda nada.
+        // ReminderService não agenda nada. Quando agenda, o tutor é avisado
+        // pela fila de notificações (RabbitMQ), depois do commit.
         reminderService.scheduleAutomatic(
-                record.getPet(),
-                ReminderType.RETURN,
-                request.date().plusMonths(FOLLOW_UP_MONTHS),
-                "Retorno de " + record.getPet().getName() + ": " + request.description());
+                        saved.getPet(),
+                        ReminderType.RETURN,
+                        request.date().plusMonths(FOLLOW_UP_MONTHS),
+                        "Retorno de " + saved.getPet().getName() + ": " + request.description())
+                .ifPresent(reminder -> notificationPublisher.returnScheduled(saved.getPet(), reminder));
 
         // Prontuário recente impacta o health score (critério de checkup nos últimos 12 meses)
         petHealthService.evictCache(request.petId());
-        return ClinicalRecordResponse.from(record);
+        return ClinicalRecordResponse.from(saved);
     }
 
     @Transactional

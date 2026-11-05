@@ -76,7 +76,7 @@ public class ApiExceptionHandler {
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ErrorResponse> handleAccessDenied(AccessDeniedException ex, HttpServletRequest request) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponse(
-                LocalDateTime.now(), 403, "Forbidden", "Voce nao tem permissao para esta operacao.",
+                LocalDateTime.now(), 403, "Forbidden", "Você não tem permissão para esta operação.",
                 request.getRequestURI(), null
         ));
     }

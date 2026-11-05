@@ -6,7 +6,6 @@ import br.com.fiap.challenge.dto.form.VetLinkForm;
 import br.com.fiap.challenge.dto.request.ActivityCheckInRequest;
 import br.com.fiap.challenge.entity.Pet;
 import br.com.fiap.challenge.enums.*;
-import br.com.fiap.challenge.exception.BusinessException;
 import br.com.fiap.challenge.security.AuthenticatedUser;
 import br.com.fiap.challenge.service.*;
 import jakarta.validation.Valid;
@@ -43,6 +42,7 @@ import java.util.stream.Collectors;
 public class TutorViewController {
 
     private static final int UPCOMING_REMINDER_DAYS = 30;
+    private static final String VINCULOS = "/tutor/vinculos";
 
     private final PetService petService;
     private final PetAccessGuard petAccessGuard;
@@ -144,26 +144,20 @@ public class TutorViewController {
                                    BindingResult binding,
                                    RedirectAttributes redirect) {
         petAccessGuard.requireTutorAccess(petId, user.getTutorId());
+        String destino = "/tutor/pets/" + petId;
 
         if (binding.hasErrors()) {
-            redirect.addFlashAttribute("org.springframework.validation.BindingResult.checkInForm", binding);
-            redirect.addFlashAttribute("checkInForm", form);
-            return "redirect:/tutor/pets/" + petId;
+            return RedirectFeedback.devolverErros(redirect, destino, "checkInForm", form, binding);
         }
 
-        try {
+        return RedirectFeedback.executar(redirect, destino, () -> {
             var checkIn = checkInService.checkIn(petId, new ActivityCheckInRequest(
                     form.getActivityType(), form.getDurationMinutes(), form.getNotes()));
-
-            var streak = checkInService.getStreak(petId);
-            redirect.addFlashAttribute("sucesso", mensagemDeStreak(streak.currentStreak(), streak.levelLabel()));
             redirect.addFlashAttribute("checkInRegistrado", checkIn.date());
 
-        } catch (BusinessException ex) {
-            redirect.addFlashAttribute("erro", ex.getMessage());
-        }
-
-        return "redirect:/tutor/pets/" + petId;
+            var streak = checkInService.getStreak(petId);
+            return mensagemDeStreak(streak.currentStreak(), streak.levelLabel());
+        });
     }
 
     // ------------------------------------ FLUXO 2: vinculo com veterinario
@@ -186,37 +180,24 @@ public class TutorViewController {
                                    BindingResult binding,
                                    RedirectAttributes redirect) {
         if (binding.hasErrors()) {
-            redirect.addFlashAttribute("org.springframework.validation.BindingResult.vetLinkForm", binding);
-            redirect.addFlashAttribute("vetLinkForm", form);
-            return "redirect:/tutor/vinculos";
+            return RedirectFeedback.devolverErros(redirect, VINCULOS, "vetLinkForm", form, binding);
         }
 
-        try {
+        return RedirectFeedback.executar(redirect, VINCULOS, () -> {
             vetLinkRequestService.request(form.getPetId(), form.getVeterinarianId(),
                     form.getMessage(), user.getId());
-            redirect.addFlashAttribute("sucesso",
-                    "Solicitacao enviada. O veterinario precisa aprovar para o vinculo valer.");
-
-        } catch (BusinessException ex) {
-            redirect.addFlashAttribute("erro", ex.getMessage());
-        }
-
-        return "redirect:/tutor/vinculos";
+            return "Solicitação enviada. O veterinário foi notificado e precisa aprovar para o vínculo valer.";
+        });
     }
 
     @PostMapping("/vinculos/{requestId}/cancelar")
     public String cancelarVinculo(@AuthenticationPrincipal AuthenticatedUser user,
                                   @PathVariable Long requestId,
                                   RedirectAttributes redirect) {
-        try {
+        return RedirectFeedback.executar(redirect, VINCULOS, () -> {
             vetLinkRequestService.cancel(requestId, user.getId());
-            redirect.addFlashAttribute("sucesso", "Solicitacao cancelada.");
-
-        } catch (BusinessException ex) {
-            redirect.addFlashAttribute("erro", ex.getMessage());
-        }
-
-        return "redirect:/tutor/vinculos";
+            return "Solicitação cancelada.";
+        });
     }
 
     // --------------------------- FLUXO 3 (lado do tutor): fechar lembrete
@@ -228,15 +209,10 @@ public class TutorViewController {
                                    RedirectAttributes redirect) {
         petAccessGuard.requireTutorAccess(petId, user.getTutorId());
 
-        try {
+        return RedirectFeedback.executar(redirect, "/tutor/pets/" + petId, () -> {
             reminderService.markDoneForPet(reminderId, petId);
-            redirect.addFlashAttribute("sucesso", "Lembrete marcado como concluido.");
-
-        } catch (BusinessException ex) {
-            redirect.addFlashAttribute("erro", ex.getMessage());
-        }
-
-        return "redirect:/tutor/pets/" + petId;
+            return "Lembrete marcado como concluído.";
+        });
     }
 
     // -------------------------------------------------------------- apoio
@@ -248,7 +224,7 @@ public class TutorViewController {
 
     private String mensagemDeStreak(int streak, String nivel) {
         return streak == 1
-                ? "Check-in registrado. Comeca aqui uma nova sequencia."
-                : "Check-in registrado. Sequencia de " + streak + " dias -- nivel " + nivel + ".";
+                ? "Check-in registrado. Começa aqui uma nova sequência."
+                : "Check-in registrado. Sequência de " + streak + " dias — nível " + nivel + ".";
     }
 }

@@ -3,7 +3,6 @@ package br.com.fiap.challenge.web;
 import br.com.fiap.challenge.dto.form.ClinicalRecordForm;
 import br.com.fiap.challenge.dto.request.ClinicalRecordRequest;
 import br.com.fiap.challenge.entity.Pet;
-import br.com.fiap.challenge.exception.BusinessException;
 import br.com.fiap.challenge.security.AuthenticatedUser;
 import br.com.fiap.challenge.service.*;
 import jakarta.validation.Valid;
@@ -38,6 +37,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class VetViewController {
 
     private static final int HISTORY_PAGE_SIZE = 10;
+    private static final String SOLICITACOES = "/vet/solicitacoes";
 
     private final PetService petService;
     private final PetAccessGuard petAccessGuard;
@@ -81,9 +81,9 @@ public class VetViewController {
                           @PathVariable Long requestId,
                           @RequestParam(required = false) String observacao,
                           RedirectAttributes redirect) {
-        return decidir(redirect, () -> {
+        return RedirectFeedback.executar(redirect, SOLICITACOES, () -> {
             var pedido = vetLinkRequestService.approve(requestId, observacao, user.getVeterinarianId());
-            return pedido.getPet().getName() + " agora esta sob seus cuidados.";
+            return pedido.getPet().getName() + " agora está sob seus cuidados. O tutor foi notificado.";
         });
     }
 
@@ -92,9 +92,9 @@ public class VetViewController {
                           @PathVariable Long requestId,
                           @RequestParam(required = false) String observacao,
                           RedirectAttributes redirect) {
-        return decidir(redirect, () -> {
+        return RedirectFeedback.executar(redirect, SOLICITACOES, () -> {
             var pedido = vetLinkRequestService.reject(requestId, observacao, user.getVeterinarianId());
-            return "Solicitacao de " + pedido.getPet().getName() + " recusada.";
+            return "Solicitação de " + pedido.getPet().getName() + " recusada. O tutor foi notificado.";
         });
     }
 
@@ -130,47 +130,17 @@ public class VetViewController {
                                        BindingResult binding,
                                        RedirectAttributes redirect) {
         petAccessGuard.requireVeterinarianAccess(petId, user.getVeterinarianId());
+        String destino = "/vet/pacientes/" + petId;
 
         if (binding.hasErrors()) {
-            redirect.addFlashAttribute("org.springframework.validation.BindingResult.atendimentoForm", binding);
-            redirect.addFlashAttribute("atendimentoForm", form);
-            return "redirect:/vet/pacientes/" + petId;
+            return RedirectFeedback.devolverErros(redirect, destino, "atendimentoForm", form, binding);
         }
 
-        try {
+        return RedirectFeedback.executar(redirect, destino, () -> {
             clinicalRecordService.create(new ClinicalRecordRequest(
                     form.getDate(), form.getDescription(), form.getDiagnosis(), form.getTreatment(),
                     form.getWeight(), form.getObservations(), petId, user.getVeterinarianId()));
-
-            redirect.addFlashAttribute("sucesso",
-                    "Atendimento registrado. O retorno preventivo foi agendado automaticamente.");
-
-        } catch (BusinessException ex) {
-            redirect.addFlashAttribute("erro", ex.getMessage());
-        }
-
-        return "redirect:/vet/pacientes/" + petId;
-    }
-
-    // -------------------------------------------------------------- apoio
-
-    /**
-     * Aprovar e recusar diferem apenas na chamada ao service e na mensagem de
-     * sucesso. O restante -- executar, tratar a regra de negocio violada e
-     * voltar para a lista -- e identico, e fica em um lugar so.
-     */
-    private String decidir(RedirectAttributes redirect, Decisao decisao) {
-        try {
-            redirect.addFlashAttribute("sucesso", decisao.executar());
-        } catch (BusinessException ex) {
-            redirect.addFlashAttribute("erro", ex.getMessage());
-        }
-        return "redirect:/vet/solicitacoes";
-    }
-
-    /** Acao que decide uma solicitacao e devolve a mensagem exibida ao usuario. */
-    @FunctionalInterface
-    private interface Decisao {
-        String executar();
+            return "Atendimento registrado. O retorno preventivo foi agendado e o tutor será notificado.";
+        });
     }
 }

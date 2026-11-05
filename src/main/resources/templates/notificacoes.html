@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: pagina('Notificações', ~{:: main})}" lang="pt-BR">
+<body>
+<main>
+
+    <div class="cabecalho-pagina">
+        <div>
+            <h1>Notificações</h1>
+            <p class="subtitulo">
+                Avisos gerados por outras pessoas na plataforma. Eles passam por uma fila
+                de mensagens, então podem levar um instante para aparecer.
+            </p>
+        </div>
+        <form th:if="${notificacoesNaoLidas > 0}" th:action="@{/notificacoes/marcar-todas}" method="post">
+            <button type="submit" class="botao secundario">Marcar todas como lidas</button>
+        </form>
+    </div>
+
+    <div class="vazio cartao" th:if="${#lists.isEmpty(notificacoes)}">
+        Nenhuma notificação por enquanto.
+    </div>
+
+    <section class="cartao" th:unless="${#lists.isEmpty(notificacoes)}">
+        <ul class="lista-notificacoes">
+            <li th:each="n : ${notificacoes}" th:classappend="${n.unread} ? 'nao-lida'">
+                <div class="notificacao-texto">
+                    <span class="etiqueta"
+                          th:classappend="${n.type.name() == 'LINK_APPROVED'} ? ' sucesso'
+                                        : (${n.type.name() == 'LINK_REJECTED'} ? ' erro' : ' alerta')"
+                          th:text="${n.type.label}">Tipo</span>
+                    <p th:text="${n.message}">Mensagem</p>
+                    <span class="dica" th:text="${#temporals.format(n.occurredAt, 'dd/MM/yyyy HH:mm')}">data</span>
+                </div>
+                <!-- POST: abrir marca como lida, e alteracao de estado exige o token CSRF. -->
+                <form th:action="@{/notificacoes/{id}/abrir(id=${n.id})}" method="post">
+                    <button type="submit" class="botao compacto"
+                            th:classappend="${n.unread} ? '' : ' secundario'">Abrir</button>
+                </form>
+            </li>
+        </ul>
+    </section>
+
+</main>
+</body>
+</html>
